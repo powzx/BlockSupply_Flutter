@@ -18,7 +18,7 @@ Future<MqttServerClient> mqttConnect() async {
   client.secure = true;
   client.securityContext = myContext;
 
-  client.logging(on: true);
+  client.logging(on: false);
   client.onConnected = onConnected;
   client.onDisconnected = onDisconnected;
   client.onSubscribed = onSubscribed;

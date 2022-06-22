@@ -6,8 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:uuid/uuid.dart';
 
 MqttServerClient client;
+String uuid = Uuid().v1();
 
 Future<void> setMyContext() async {
   ByteData caData = await rootBundle.load('data/ca.crt');
@@ -35,9 +37,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'BlockSupply',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.grey,
       ),
-      home: HomeScreen(title: 'BlockSupply', client: client,),
+      home: HomeScreen(title: 'BlockSupply', client: client, uuid: uuid),
       debugShowCheckedModeBanner: false,
     );
   }
