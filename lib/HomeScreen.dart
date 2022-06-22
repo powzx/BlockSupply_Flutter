@@ -1,10 +1,7 @@
 import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-
-final String getTopic = '/topic/dispatch/get';
 
 class HomeScreen extends StatefulWidget {
   final String title;
@@ -26,27 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   _HomeScreenState({this.title, this.client, this.uuid});
 
   TextEditingController serialNumController = new TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Attach dedicated listener
-    client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-      final MqttPublishMessage message = c[0].payload;
-      final payload =
-          MqttPublishPayload.bytesToStringAsString(message.payload.message);
-
-      print('Received message: $payload from topic: ${c[0].topic}');
-
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (BuildContext context) {
-        return ResultScreen(
-          result: payload,
-        );
-      }));
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +66,11 @@ class _HomeScreenState extends State<HomeScreen> {
               child: TextButton(
                 child: Text("REQUEST"),
                 onPressed: () {
-                  final builder = MqttClientPayloadBuilder();
-                  final topic = getTopic;
-                  final message =
-                      "{\"serialNum\":\"${serialNumController.text}\",\"uuid\":\"$uuid\"}";
-
-                  builder.addString(message);
-                  client.publishMessage(
-                      topic, MqttQos.atLeastOnce, builder.payload);
-                  print(
-                      'Published message of topic: $topic and message: $message');
+                  final serialNum = serialNumController.text;
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return ResultScreen(client: client, serialNum: serialNum, uuid: uuid);
+                  }));
 
                   serialNumController.clear();
                 },

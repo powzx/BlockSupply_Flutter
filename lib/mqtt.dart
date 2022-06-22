@@ -44,6 +44,17 @@ Future<MqttServerClient> mqttConnect() async {
   return client;
 }
 
+void startListening(MqttServerClient client) {
+  // Attach dedicated listener
+  client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+    final MqttPublishMessage message = c[0].payload;
+    final payload =
+    MqttPublishPayload.bytesToStringAsString(message.payload.message);
+
+    print('Received message: $payload from topic: ${c[0].topic}');
+  });
+}
+
 void onConnected() {
   print('Connected to MQTT Broker at $serverIp');
 }
