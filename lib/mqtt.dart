@@ -41,14 +41,6 @@ Future<MqttServerClient> mqttConnect() async {
     client.disconnect();
   }
 
-  client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-    final MqttPublishMessage message = c[0].payload;
-    final payload =
-        MqttPublishPayload.bytesToStringAsString(message.payload.message);
-
-    print('Received message: $payload from topic: ${c[0].topic}');
-  });
-
   return client;
 }
 

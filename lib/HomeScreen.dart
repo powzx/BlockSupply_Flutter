@@ -1,3 +1,4 @@
+import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -25,6 +26,27 @@ class _HomeScreenState extends State<HomeScreen> {
   _HomeScreenState({this.title, this.client, this.uuid});
 
   TextEditingController serialNumController = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Attach dedicated listener
+    client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+      final MqttPublishMessage message = c[0].payload;
+      final payload =
+          MqttPublishPayload.bytesToStringAsString(message.payload.message);
+
+      print('Received message: $payload from topic: ${c[0].topic}');
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return ResultScreen(
+          result: payload,
+        );
+      }));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   final topic = getTopic;
                   final message =
                       "{\"serialNum\":\"${serialNumController.text}\",\"uuid\":\"$uuid\"}";
-
-                  client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
 
                   builder.addString(message);
                   client.publishMessage(

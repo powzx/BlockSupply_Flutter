@@ -5,6 +5,7 @@ import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,6 +28,7 @@ Future<void> main() async {
   await setMyContext();
 
   client = await mqttConnect();
+  client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
 
   runApp(MyApp());
 }
