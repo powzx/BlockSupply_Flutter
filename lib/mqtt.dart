@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -42,17 +43,6 @@ Future<MqttServerClient> mqttConnect() async {
   }
 
   return client;
-}
-
-void startListening(MqttServerClient client) {
-  // Attach dedicated listener
-  client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-    final MqttPublishMessage message = c[0].payload;
-    final payload =
-    MqttPublishPayload.bytesToStringAsString(message.payload.message);
-
-    print('Received message: $payload from topic: ${c[0].topic}');
-  });
 }
 
 void onConnected() {

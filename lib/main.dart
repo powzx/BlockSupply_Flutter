@@ -28,7 +28,6 @@ Future<void> main() async {
 
   client = await mqttConnect();
   client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
-  startListening(client);
 
   runApp(MyApp());
 }

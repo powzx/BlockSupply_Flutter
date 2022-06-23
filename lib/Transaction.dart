@@ -1,11 +1,17 @@
 class Transaction {
-  final String date;
-  final String time;
-  final String temperature;
-  final String humidity;
-  final String signer;
-  final String publicKey;
+  String secondsSinceEpoch;
+  String temperature;
+  String humidity;
+  String signer;
+  String publicKey;
 
-  Transaction(this.date, this.time, this.temperature, this.humidity,
-      this.signer, this.publicKey);
+  Transaction(secondsSinceEpoch, temperature, humidity, signer, publicKey) {
+    this.secondsSinceEpoch = secondsSinceEpoch;
+    this.temperature = temperature;
+    this.humidity = humidity;
+    this.signer = signer;
+    this.publicKey = publicKey;
+
+    // DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(secondsSinceEpoch) * 1000);
+  }
 }
