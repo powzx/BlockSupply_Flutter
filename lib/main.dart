@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'BlockSupply',
       theme: ThemeData(
-        primaryColor: Colors.grey,
+        primarySwatch: Colors.grey,
       ),
       home: HomeScreen(title: 'BlockSupply', client: client, uuid: uuid),
       debugShowCheckedModeBanner: false,

@@ -34,6 +34,9 @@ dependencies:
   ecdsa: ^0.0.4
   uuid: ^3.0.6
   syncfusion_flutter_charts: ^20.1.61
+  syncfusion_flutter_datagrid: ^20.1.61
+  intl: ^0.17.0
+  pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -3,16 +3,17 @@ import 'dart:convert';
 import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-TooltipBehavior _tooltipBehavior;
+TooltipBehavior _tempTooltipBehavior;
+TooltipBehavior _humidityTooltipBehavior;
 
 final String getTopic = '/topic/dispatch/get';
 
 class ResultScreen extends StatefulWidget {
   final String resultString;
 
-  ResultScreen({Key key, this.resultString})
-      : super(key: key);
+  ResultScreen({Key key, this.resultString}) : super(key: key);
 
   @override
   _ResultScreenState createState() =>
@@ -26,13 +27,17 @@ class _ResultScreenState extends State<ResultScreen> {
 
   dynamic resultJson;
   String serialNum;
+
+  TransactionDataSource txnDataSource;
+
   // var builder;
   // var topic;
   // var message;
 
   @override
   void initState() {
-    _tooltipBehavior = TooltipBehavior(enable: true);
+    _tempTooltipBehavior = TooltipBehavior(enable: true);
+    _humidityTooltipBehavior = TooltipBehavior(enable: true);
 
     super.initState();
 
@@ -47,6 +52,9 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Transaction> txnList = createTransactions();
+    TransactionDataSource txnDataSource = createTransactionDataSource(txnList);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Result'),
@@ -96,78 +104,118 @@ class _ResultScreenState extends State<ResultScreen> {
               child: SfCartesianChart(
                 title: ChartTitle(text: 'Temperature'),
                 legend: Legend(isVisible: false),
-                series: getTempData(),
-                tooltipBehavior: _tooltipBehavior,
+                series: <LineSeries<Transaction, num>>[
+                  LineSeries<Transaction, num>(
+                      name: 'Temperature',
+                      color: Colors.blue,
+                      enableTooltip: true,
+                      dataSource: txnList,
+                      xValueMapper: (Transaction transaction, _) =>
+                          int.parse(transaction.secondsSinceEpoch),
+                      yValueMapper: (Transaction transaction, _) =>
+                          int.parse(transaction.temperature),
+                      width: 2,
+                      markerSettings: MarkerSettings(
+                          isVisible: true,
+                          height: 4,
+                          width: 4,
+                          shape: DataMarkerType.circle,
+                          borderWidth: 3,
+                          borderColor: Colors.black),
+                      dataLabelSettings: DataLabelSettings(
+                          isVisible: false,
+                          labelAlignment: ChartDataLabelAlignment.auto)),
+                ],
+                tooltipBehavior: _tempTooltipBehavior,
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(columns: const <DataColumn>[
-                  DataColumn(
-                    label: Text(
-                      'Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Time',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Temperature',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Humidity',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Signer',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Public Key',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ], rows: const <DataRow>[
-                  DataRow(cells: <DataCell>[
-                    DataCell(Text('date')),
-                    DataCell(Text('time')),
-                    DataCell(Text('temperature')),
-                    DataCell(Text('humidity')),
-                    DataCell(Text('signer')),
-                    DataCell(Text('public key')),
-                  ]),
-                  DataRow(cells: <DataCell>[
-                    DataCell(Text('date')),
-                    DataCell(Text('time')),
-                    DataCell(Text('temperature')),
-                    DataCell(Text('humidity')),
-                    DataCell(Text('signer')),
-                    DataCell(Text('public key')),
-                  ]),
-                  DataRow(cells: <DataCell>[
-                    DataCell(Text('date')),
-                    DataCell(Text('time')),
-                    DataCell(Text('temperature')),
-                    DataCell(Text('humidity')),
-                    DataCell(Text('signer')),
-                    DataCell(Text('public key')),
-                  ]),
-                ]),
+            Container(
+              width: MediaQuery.of(context).size.width - 20,
+              height: MediaQuery.of(context).size.height / 3,
+              child: SfCartesianChart(
+                title: ChartTitle(text: 'Humidity'),
+                legend: Legend(isVisible: false),
+                series: <LineSeries<Transaction, num>>[
+                  LineSeries<Transaction, num>(
+                      name: 'Humidity',
+                      color: Colors.red,
+                      enableTooltip: true,
+                      dataSource: txnList,
+                      xValueMapper: (Transaction transaction, _) =>
+                          int.parse(transaction.secondsSinceEpoch),
+                      yValueMapper: (Transaction transaction, _) =>
+                          int.parse(transaction.humidity),
+                      width: 2,
+                      markerSettings: MarkerSettings(
+                        isVisible: true,
+                        height: 4,
+                        width: 4,
+                        shape: DataMarkerType.circle,
+                        borderWidth: 3,
+                        borderColor: Colors.black,
+                      ),
+                      dataLabelSettings: DataLabelSettings(
+                          isVisible: false,
+                          labelAlignment: ChartDataLabelAlignment.auto))
+                ],
+                tooltipBehavior: _humidityTooltipBehavior,
               ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width - 20,
+              height: MediaQuery.of(context).size.height / 3,
+              child: SfDataGrid(source: txnDataSource, columns: [
+                GridColumn(
+                    columnName: 'datetime',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Date/Time',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
+                GridColumn(
+                    columnName: 'temp',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Temperature',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
+                GridColumn(
+                    columnName: 'humidity',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Humidity',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
+                GridColumn(
+                    columnName: 'signer',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Signer',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
+                GridColumn(
+                    columnName: 'public key',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 50.0),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Public Key',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
+              ]),
             ),
           ],
         ),
@@ -175,33 +223,8 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-  List<LineSeries<Transaction, num>> getTempData() {
-    final List<Transaction> chartData = createTransactions();
-
-    return <LineSeries<Transaction, num>>[
-      LineSeries<Transaction, num>(
-          enableTooltip: true,
-          dataSource: chartData,
-          xValueMapper: (Transaction transaction, _) =>
-              int.parse(transaction.secondsSinceEpoch),
-          yValueMapper: (Transaction transaction, _) =>
-              int.parse(transaction.temperature),
-          width: 2,
-          markerSettings: MarkerSettings(
-              isVisible: true,
-              height: 4,
-              width: 4,
-              shape: DataMarkerType.circle,
-              borderWidth: 3,
-              borderColor: Colors.black),
-          dataLabelSettings: DataLabelSettings(
-              isVisible: false, labelAlignment: ChartDataLabelAlignment.auto)),
-    ];
-  }
-
   List<Transaction> createTransactions() {
     List<Transaction> txnList = [];
-
     for (int i = 0; i < this.resultJson['transactions'].length; i++) {
       Transaction transaction = new Transaction(
           this.resultJson['transactions'][i]['transaction']['data']['time'],
@@ -213,5 +236,10 @@ class _ResultScreenState extends State<ResultScreen> {
     }
 
     return txnList;
+  }
+
+  TransactionDataSource createTransactionDataSource(List<Transaction> txnList) {
+    txnDataSource = TransactionDataSource(transactions: txnList);
+    return txnDataSource;
   }
 }
