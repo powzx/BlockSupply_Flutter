@@ -1,7 +1,11 @@
+import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+TooltipBehavior _tooltipBehavior;
 
 final String getTopic = '/topic/dispatch/get';
 
@@ -31,6 +35,8 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   void initState() {
+    _tooltipBehavior = TooltipBehavior(enable: true);
+
     super.initState();
 
     builder = MqttClientPayloadBuilder();
@@ -89,6 +95,12 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ),
           ),
+          SfCartesianChart(
+            title: ChartTitle(text: 'Temperature'),
+            legend: Legend(isVisible: false),
+            series: getTempData(),
+            tooltipBehavior: _tooltipBehavior,
+          ),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: SingleChildScrollView(
@@ -131,41 +143,63 @@ class _ResultScreenState extends State<ResultScreen> {
                   ),
                 ),
               ], rows: const <DataRow>[
-                DataRow(
-                    cells: <DataCell>[
-                      DataCell(Text('date')),
-                      DataCell(Text('time')),
-                      DataCell(Text('temperature')),
-                      DataCell(Text('humidity')),
-                      DataCell(Text('signer')),
-                      DataCell(Text('public key')),
-                    ]
-                ),
-                DataRow(
-                    cells: <DataCell>[
-                      DataCell(Text('date')),
-                      DataCell(Text('time')),
-                      DataCell(Text('temperature')),
-                      DataCell(Text('humidity')),
-                      DataCell(Text('signer')),
-                      DataCell(Text('public key')),
-                    ]
-                ),
-                DataRow(
-                    cells: <DataCell>[
-                      DataCell(Text('date')),
-                      DataCell(Text('time')),
-                      DataCell(Text('temperature')),
-                      DataCell(Text('humidity')),
-                      DataCell(Text('signer')),
-                      DataCell(Text('public key')),
-                    ]
-                ),
+                DataRow(cells: <DataCell>[
+                  DataCell(Text('date')),
+                  DataCell(Text('time')),
+                  DataCell(Text('temperature')),
+                  DataCell(Text('humidity')),
+                  DataCell(Text('signer')),
+                  DataCell(Text('public key')),
+                ]),
+                DataRow(cells: <DataCell>[
+                  DataCell(Text('date')),
+                  DataCell(Text('time')),
+                  DataCell(Text('temperature')),
+                  DataCell(Text('humidity')),
+                  DataCell(Text('signer')),
+                  DataCell(Text('public key')),
+                ]),
+                DataRow(cells: <DataCell>[
+                  DataCell(Text('date')),
+                  DataCell(Text('time')),
+                  DataCell(Text('temperature')),
+                  DataCell(Text('humidity')),
+                  DataCell(Text('signer')),
+                  DataCell(Text('public key')),
+                ]),
               ]),
             ),
           ),
         ],
       ),
     );
+  }
+
+  static List<LineSeries<Transaction, num>> getTempData() {
+    final List<Transaction> chartData = <Transaction>[
+      Transaction('2022-06-23', '1013', '8', '43', 'ESP32-1', '8fe1a72'),
+      Transaction('2022-06-23', '1018', '2', '40', 'ESP32-1', '8fe1a72'),
+      Transaction('2022-06-23', '1023', '1', '32', 'ESP32-1', '8fe1a72'),
+    ];
+
+    return <LineSeries<Transaction, num>>[
+      LineSeries<Transaction, num>(
+          enableTooltip: true,
+          dataSource: chartData,
+          xValueMapper: (Transaction transaction, _) =>
+              int.parse(transaction.time),
+          yValueMapper: (Transaction transaction, _) =>
+              int.parse(transaction.temperature),
+          width: 2,
+          markerSettings: MarkerSettings(
+              isVisible: true,
+              height: 4,
+              width: 4,
+              shape: DataMarkerType.circle,
+              borderWidth: 3,
+              borderColor: Colors.red),
+          dataLabelSettings: DataLabelSettings(
+              isVisible: false, labelAlignment: ChartDataLabelAlignment.auto)),
+    ];
   }
 }

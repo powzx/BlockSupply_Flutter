@@ -33,6 +33,7 @@ dependencies:
   elliptic: ^0.3.8
   ecdsa: ^0.0.4
   uuid: ^3.0.6
+  syncfusion_flutter_charts: ^20.1.61
 
 dev_dependencies:
   flutter_test:
