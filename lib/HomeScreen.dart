@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:blocksupply_flutter/GetScreen.dart';
+import 'package:blocksupply_flutter/LoadScreen.dart';
 import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -18,18 +21,20 @@ class HomeScreen extends StatefulWidget {
       _HomeScreenState(title: title, client: client, uuid: uuid);
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final String title;
   final MqttServerClient client;
   final String uuid;
 
   _HomeScreenState({this.title, this.client, this.uuid});
 
-  TextEditingController serialNumController = new TextEditingController();
+  TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+
+    _tabController = TabController(vsync: this, initialIndex: 0, length: 2);
 
     // Attach dedicated listener
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
@@ -64,62 +69,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        automaticallyImplyLeading: false,
+        title: TabBar(
+          controller: _tabController,
+          labelStyle: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.w800,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.w800,
+          ),
+          tabs: <Widget>[
+            Tab(
+              text: "LOAD",
+            ),
+            Tab(
+              text: "GET",
+            ),
+          ],
+        ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: TabBarView(
+        controller: _tabController,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                "Enter Serial Number",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: TextField(
-                controller: serialNumController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Serial Number',
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: TextButton(
-                child: Text("REQUEST"),
-                onPressed: () {
-                  final serialNum = serialNumController.text;
-
-                  var builder = MqttClientPayloadBuilder();
-                  String message =
-                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.uuid}\"}";
-
-                  builder.addString(message);
-
-                  client.publishMessage(
-                      getTopic, MqttQos.atLeastOnce, builder.payload);
-                  print(
-                      'Published message of topic: $getTopic and message: $message');
-
-                  serialNumController.clear();
-                },
-              ),
-            ),
-          ),
+          LoadScreen(client: client, uuid: uuid,),
+          GetScreen(client: client, uuid: uuid,),
         ],
       ),
     );
