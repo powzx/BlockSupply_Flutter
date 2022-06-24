@@ -13,6 +13,7 @@ Timer timer;
 ChartSeriesController _tempChartSeriesController;
 ChartSeriesController _humidityChartSeriesController;
 
+List<Transaction> globalList = <Transaction>[];
 List<Transaction> newTxnList = <Transaction>[];
 
 TooltipBehavior _tempTooltipBehavior;
@@ -63,6 +64,7 @@ class _ResultScreenState extends State<ResultScreen> {
   void dispose() {
     client.unsubscribe(updateTopic);
     updateTopic = '';
+    globalList = [];
     timer.cancel();
 
     super.dispose();
@@ -70,7 +72,12 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    this.txnList = createTransactions();
+
+    if (globalList.isNotEmpty) {
+      this.txnList = globalList;
+    } else {
+      this.txnList = createTransactions();
+    }
     this.txnDataSource = createTransactionDataSource(txnList);
 
     return Scaffold(
@@ -212,12 +219,21 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
-                child: Text('All Records'),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                  child: Text('All Records'),
+                ),
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    globalList = txnList;
+                    setState(() {});
+                  },
+                ),
+              ],
             ),
             Container(
               width: MediaQuery.of(context).size.width,
@@ -229,7 +245,6 @@ class _ResultScreenState extends State<ResultScreen> {
                     headerColor: const Color(0xff009889),
                   ),
                   child: SfDataGrid(
-                    allowPullToRefresh: true,
                     headerRowHeight: 40.0,
                     rowHeight: 40.0,
                     source: txnDataSource,
