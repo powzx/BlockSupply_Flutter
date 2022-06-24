@@ -5,7 +5,6 @@ import 'package:blocksupply_flutter/LoadScreen.dart';
 import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   void initState() {
     super.initState();
 
-    _tabController = TabController(vsync: this, initialIndex: 0, length: 2);
+    _tabController = TabController(vsync: this, initialIndex: 1, length: 2);
 
     // Attach dedicated listener
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
