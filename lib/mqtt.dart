@@ -18,7 +18,7 @@ Future<MqttServerClient> mqttConnect() async {
   client.secure = true;
   client.securityContext = myContext;
 
-  client.logging(on: true);
+  client.logging(on: false);
   client.onConnected = onConnected;
   client.onDisconnected = onDisconnected;
   client.onSubscribed = onSubscribed;
@@ -40,14 +40,6 @@ Future<MqttServerClient> mqttConnect() async {
     print('Exception: $exception');
     client.disconnect();
   }
-
-  client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-    final MqttPublishMessage message = c[0].payload;
-    final payload =
-        MqttPublishPayload.bytesToStringAsString(message.payload.message);
-
-    print('Received message: $payload from topic: ${c[0].topic}');
-  });
 
   return client;
 }
