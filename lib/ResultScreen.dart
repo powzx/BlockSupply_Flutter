@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 TooltipBehavior _tempTooltipBehavior;
@@ -69,7 +70,7 @@ class _ResultScreenState extends State<ResultScreen> {
               child: Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: const Color(0xff009889),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Column(
@@ -99,123 +100,156 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ),
             Container(
-              width: MediaQuery.of(context).size.width - 20,
+              width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 3,
-              child: SfCartesianChart(
-                title: ChartTitle(text: 'Temperature'),
-                legend: Legend(isVisible: false),
-                series: <LineSeries<Transaction, num>>[
-                  LineSeries<Transaction, num>(
-                      name: 'Temperature',
-                      color: Colors.blue,
-                      enableTooltip: true,
-                      dataSource: txnList,
-                      xValueMapper: (Transaction transaction, _) =>
-                          int.parse(transaction.secondsSinceEpoch),
-                      yValueMapper: (Transaction transaction, _) =>
-                          int.parse(transaction.temperature),
-                      width: 2,
-                      markerSettings: MarkerSettings(
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: SfCartesianChart(
+                  title: ChartTitle(text: 'Temperature'),
+                  legend: Legend(isVisible: false),
+                  series: <LineSeries<Transaction, num>>[
+                    LineSeries<Transaction, num>(
+                        name: 'Temperature',
+                        color: Colors.blue,
+                        enableTooltip: true,
+                        dataSource: txnList,
+                        xValueMapper: (Transaction transaction, _) =>
+                            int.parse(transaction.secondsSinceEpoch),
+                        yValueMapper: (Transaction transaction, _) =>
+                            int.parse(transaction.temperature),
+                        width: 2,
+                        markerSettings: MarkerSettings(
+                            isVisible: true,
+                            height: 4,
+                            width: 4,
+                            shape: DataMarkerType.circle,
+                            borderWidth: 3,
+                            borderColor: Colors.black),
+                        dataLabelSettings: DataLabelSettings(
+                            isVisible: false,
+                            labelAlignment: ChartDataLabelAlignment.auto)),
+                  ],
+                  tooltipBehavior: _tempTooltipBehavior,
+                ),
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 3,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: SfCartesianChart(
+                  title: ChartTitle(text: 'Humidity'),
+                  legend: Legend(isVisible: false),
+                  series: <LineSeries<Transaction, num>>[
+                    LineSeries<Transaction, num>(
+                        name: 'Humidity',
+                        color: Colors.red,
+                        enableTooltip: true,
+                        dataSource: txnList,
+                        xValueMapper: (Transaction transaction, _) =>
+                            int.parse(transaction.secondsSinceEpoch),
+                        yValueMapper: (Transaction transaction, _) =>
+                            int.parse(transaction.humidity),
+                        width: 2,
+                        markerSettings: MarkerSettings(
                           isVisible: true,
                           height: 4,
                           width: 4,
                           shape: DataMarkerType.circle,
                           borderWidth: 3,
-                          borderColor: Colors.black),
-                      dataLabelSettings: DataLabelSettings(
-                          isVisible: false,
-                          labelAlignment: ChartDataLabelAlignment.auto)),
-                ],
-                tooltipBehavior: _tempTooltipBehavior,
+                          borderColor: Colors.black,
+                        ),
+                        dataLabelSettings: DataLabelSettings(
+                            isVisible: false,
+                            labelAlignment: ChartDataLabelAlignment.auto))
+                  ],
+                  tooltipBehavior: _humidityTooltipBehavior,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 5.0),
+                child: Text('All Records'),
               ),
             ),
             Container(
-              width: MediaQuery.of(context).size.width - 20,
+              width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 3,
-              child: SfCartesianChart(
-                title: ChartTitle(text: 'Humidity'),
-                legend: Legend(isVisible: false),
-                series: <LineSeries<Transaction, num>>[
-                  LineSeries<Transaction, num>(
-                      name: 'Humidity',
-                      color: Colors.red,
-                      enableTooltip: true,
-                      dataSource: txnList,
-                      xValueMapper: (Transaction transaction, _) =>
-                          int.parse(transaction.secondsSinceEpoch),
-                      yValueMapper: (Transaction transaction, _) =>
-                          int.parse(transaction.humidity),
-                      width: 2,
-                      markerSettings: MarkerSettings(
-                        isVisible: true,
-                        height: 4,
-                        width: 4,
-                        shape: DataMarkerType.circle,
-                        borderWidth: 3,
-                        borderColor: Colors.black,
-                      ),
-                      dataLabelSettings: DataLabelSettings(
-                          isVisible: false,
-                          labelAlignment: ChartDataLabelAlignment.auto))
-                ],
-                tooltipBehavior: _humidityTooltipBehavior,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: SfDataGridTheme(
+                  data: SfDataGridThemeData(
+                    headerColor: const Color(0xff009889),
+                  ),
+                  child: SfDataGrid(
+                    headerRowHeight: 40.0,
+                    rowHeight: 40.0,
+                    source: txnDataSource,
+                    columns: [
+                      GridColumn(
+                          columnName: 'datetime',
+                          width: 180.0,
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Date/Time',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                      GridColumn(
+                          columnName: 'temp',
+                          width: 120.0,
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Temperature',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                      GridColumn(
+                          columnName: 'humidity',
+                          width: 100.0,
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Humidity',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                      GridColumn(
+                          columnName: 'signer',
+                          width: 140.0,
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Signer',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                      GridColumn(
+                          columnName: 'public key',
+                          width: 600.0,
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 50.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Public Key',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )),
+                    ],
+                    gridLinesVisibility: GridLinesVisibility.both,
+                    headerGridLinesVisibility: GridLinesVisibility.both,
+                  ),
+                ),
               ),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width - 20,
-              height: MediaQuery.of(context).size.height / 3,
-              child: SfDataGrid(source: txnDataSource, columns: [
-                GridColumn(
-                    columnName: 'datetime',
-                    label: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Date/Time',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-                GridColumn(
-                    columnName: 'temp',
-                    label: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Temperature',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-                GridColumn(
-                    columnName: 'humidity',
-                    label: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Humidity',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-                GridColumn(
-                    columnName: 'signer',
-                    label: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Signer',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-                GridColumn(
-                    columnName: 'public key',
-                    label: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 50.0),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Public Key',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )),
-              ]),
             ),
           ],
         ),

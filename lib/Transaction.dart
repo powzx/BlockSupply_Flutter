@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -47,14 +47,16 @@ class TransactionDataSource extends DataGridSource {
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     return DataGridRowAdapter(
+        color: Color(0xffebecf0),
         cells: row.getCells().map<Widget>((dataGridCell) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          dataGridCell.value.toString(),
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    }).toList());
+          return Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              dataGridCell.value.toString(),
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        }).toList());
   }
 }
