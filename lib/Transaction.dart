@@ -24,6 +24,11 @@ class Transaction {
     DateFormat f = new DateFormat('yyyy-MM-dd HH:mm');
     this.dateTimeStr = f.format(dateTime);
   }
+
+  @override
+  String toString() {
+    return "{secondsSinceEpoch: $secondsSinceEpoch, temperature: $temperature, humidity: $humidity, signer: $signer, publicKey: $publicKey}";
+  }
 }
 
 class TransactionDataSource extends DataGridSource {

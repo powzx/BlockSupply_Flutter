@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:blocksupply_flutter/ResultScreen.dart';
+import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -31,15 +34,29 @@ class _HomeScreenState extends State<HomeScreen> {
     // Attach dedicated listener
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage message = c[0].payload;
+      final topic = c[0].topic;
       final payload =
-      MqttPublishPayload.bytesToStringAsString(message.payload.message);
+          MqttPublishPayload.bytesToStringAsString(message.payload.message);
 
-      print('Received message: $payload from topic: ${c[0].topic}');
+      print('Received message: $payload from topic: $topic');
 
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (BuildContext context) {
-        return ResultScreen(resultString: payload);
-      }));
+      if (topic == "/topic/users/${this.uuid}") {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
+          return ResultScreen(client: client, resultString: payload);
+        }));
+      } else if (topic == updateTopic) {
+        final newPayloadJson = json.decode(payload);
+        newTxnList.add(new Transaction(
+            newPayloadJson['data']['time'],
+            newPayloadJson['data']['temp'],
+            newPayloadJson['data']['humidity'],
+            '',
+            ''));
+        print('Received updated transaction');
+      } else {
+        print('No specified handler for this topic');
+      }
     });
   }
 
@@ -88,13 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   final serialNum = serialNumController.text;
 
                   var builder = MqttClientPayloadBuilder();
-                  String topic = getTopic;
-                  String message = "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.uuid}\"}";
+                  String message =
+                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.uuid}\"}";
 
                   builder.addString(message);
 
-                  client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
-                  print('Published message of topic: $topic and message: $message');
+                  client.publishMessage(
+                      getTopic, MqttQos.atLeastOnce, builder.payload);
+                  print(
+                      'Published message of topic: $getTopic and message: $message');
 
                   serialNumController.clear();
                 },

@@ -1,39 +1,48 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:blocksupply_flutter/Transaction.dart';
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+Timer timer;
+ChartSeriesController _tempChartSeriesController;
+ChartSeriesController _humidityChartSeriesController;
+
+List<Transaction> newTxnList = <Transaction>[];
+
 TooltipBehavior _tempTooltipBehavior;
 TooltipBehavior _humidityTooltipBehavior;
 
-final String getTopic = '/topic/dispatch/get';
+String getTopic = '/topic/dispatch/get';
+String updateTopic = '';
 
 class ResultScreen extends StatefulWidget {
+  final MqttServerClient client;
   final String resultString;
 
-  ResultScreen({Key key, this.resultString}) : super(key: key);
+  ResultScreen({Key key, this.client, this.resultString}) : super(key: key);
 
   @override
   _ResultScreenState createState() =>
-      _ResultScreenState(resultString: resultString);
+      _ResultScreenState(client: client, resultString: resultString);
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  final MqttServerClient client;
   final String resultString;
 
-  _ResultScreenState({this.resultString});
+  _ResultScreenState({this.client, this.resultString});
 
   dynamic resultJson;
   String serialNum;
 
+  List<Transaction> txnList;
   TransactionDataSource txnDataSource;
-
-  // var builder;
-  // var topic;
-  // var message;
 
   @override
   void initState() {
@@ -44,21 +53,36 @@ class _ResultScreenState extends State<ResultScreen> {
 
     this.resultJson = json.decode(resultString);
     this.serialNum = this.resultJson['serialNum'];
+    updateTopic = '/topic/updates/${this.serialNum}';
+
+    client.subscribe(updateTopic, MqttQos.atLeastOnce);
+    timer = Timer.periodic(const Duration(seconds: 5), _updateDataSource);
   }
 
-  // void request() {
-  //   client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
-  //   print('Published message of topic: $topic and message: $message');
-  // }
+  @override
+  void dispose() {
+    client.unsubscribe(updateTopic);
+    updateTopic = '';
+    timer.cancel();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Transaction> txnList = createTransactions();
-    TransactionDataSource txnDataSource = createTransactionDataSource(txnList);
+    this.txnList = createTransactions();
+    this.txnDataSource = createTransactionDataSource(txnList);
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Result'),
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_backspace),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -107,12 +131,21 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: SfCartesianChart(
                   title: ChartTitle(text: 'Temperature'),
                   legend: Legend(isVisible: false),
-                  primaryXAxis: DateTimeAxis(),
+                  primaryXAxis: DateTimeAxis(
+                    autoScrollingDelta: 20,
+                  ),
+                  enableAxisAnimation: true,
+                  zoomPanBehavior: ZoomPanBehavior(
+                    enablePanning: true,
+                  ),
                   series: <LineSeries<Transaction, DateTime>>[
                     LineSeries<Transaction, DateTime>(
                         name: 'Temperature',
                         color: Colors.blue,
                         enableTooltip: true,
+                        onRendererCreated: (ChartSeriesController controller) {
+                          _tempChartSeriesController = controller;
+                        },
                         dataSource: txnList,
                         xValueMapper: (Transaction transaction, _) =>
                             transaction.dateTime,
@@ -142,12 +175,21 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: SfCartesianChart(
                   title: ChartTitle(text: 'Humidity'),
                   legend: Legend(isVisible: false),
-                  primaryXAxis: DateTimeAxis(),
+                  primaryXAxis: DateTimeAxis(
+                    autoScrollingDelta: 20,
+                  ),
+                  enableAxisAnimation: true,
+                  zoomPanBehavior: ZoomPanBehavior(
+                    enablePanning: true,
+                  ),
                   series: <LineSeries<Transaction, DateTime>>[
                     LineSeries<Transaction, DateTime>(
                         name: 'Humidity',
                         color: Colors.red,
                         enableTooltip: true,
+                        onRendererCreated: (ChartSeriesController controller) {
+                          _humidityChartSeriesController = controller;
+                        },
                         dataSource: txnList,
                         xValueMapper: (Transaction transaction, _) =>
                             transaction.dateTime,
@@ -187,6 +229,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     headerColor: const Color(0xff009889),
                   ),
                   child: SfDataGrid(
+                    allowPullToRefresh: true,
                     headerRowHeight: 40.0,
                     rowHeight: 40.0,
                     source: txnDataSource,
@@ -257,6 +300,23 @@ class _ResultScreenState extends State<ResultScreen> {
         ),
       ),
     );
+  }
+
+  void _updateDataSource(Timer timer) {
+    print('Updating Cartesian chart...');
+    print('New transaction list: ${newTxnList.toString()}');
+
+    txnList.insertAll(0, newTxnList);
+
+    _tempChartSeriesController.updateDataSource(
+      addedDataIndexes: [0],
+    );
+
+    _humidityChartSeriesController.updateDataSource(
+      addedDataIndexes: [0],
+    );
+
+    newTxnList = [];
   }
 
   List<Transaction> createTransactions() {
