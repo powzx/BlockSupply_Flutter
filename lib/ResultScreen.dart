@@ -107,14 +107,15 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: SfCartesianChart(
                   title: ChartTitle(text: 'Temperature'),
                   legend: Legend(isVisible: false),
-                  series: <LineSeries<Transaction, num>>[
-                    LineSeries<Transaction, num>(
+                  primaryXAxis: DateTimeAxis(),
+                  series: <LineSeries<Transaction, DateTime>>[
+                    LineSeries<Transaction, DateTime>(
                         name: 'Temperature',
                         color: Colors.blue,
                         enableTooltip: true,
                         dataSource: txnList,
                         xValueMapper: (Transaction transaction, _) =>
-                            int.parse(transaction.secondsSinceEpoch),
+                            transaction.dateTime,
                         yValueMapper: (Transaction transaction, _) =>
                             int.parse(transaction.temperature),
                         width: 2,
@@ -141,14 +142,15 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: SfCartesianChart(
                   title: ChartTitle(text: 'Humidity'),
                   legend: Legend(isVisible: false),
-                  series: <LineSeries<Transaction, num>>[
-                    LineSeries<Transaction, num>(
+                  primaryXAxis: DateTimeAxis(),
+                  series: <LineSeries<Transaction, DateTime>>[
+                    LineSeries<Transaction, DateTime>(
                         name: 'Humidity',
                         color: Colors.red,
                         enableTooltip: true,
                         dataSource: txnList,
                         xValueMapper: (Transaction transaction, _) =>
-                            int.parse(transaction.secondsSinceEpoch),
+                            transaction.dateTime,
                         yValueMapper: (Transaction transaction, _) =>
                             int.parse(transaction.humidity),
                         width: 2,

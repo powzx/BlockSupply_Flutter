@@ -4,7 +4,8 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class Transaction {
   String secondsSinceEpoch;
-  String dateTime;
+  DateTime dateTime;
+  String dateTimeStr;
   String temperature;
   String humidity;
   String signer;
@@ -17,11 +18,11 @@ class Transaction {
     this.signer = signer;
     this.publicKey = publicKey;
 
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+    this.dateTime = DateTime.fromMillisecondsSinceEpoch(
         int.parse(secondsSinceEpoch) * 1000);
 
-    DateFormat f = new DateFormat('yyyy-MM-dd hh:mm');
-    this.dateTime = f.format(dateTime);
+    DateFormat f = new DateFormat('yyyy-MM-dd HH:mm');
+    this.dateTimeStr = f.format(dateTime);
   }
 }
 
@@ -31,7 +32,8 @@ class TransactionDataSource extends DataGridSource {
   TransactionDataSource({List<Transaction> transactions}) {
     dataGridRows = transactions
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-              DataGridCell(columnName: 'datetime', value: dataGridRow.dateTime),
+              DataGridCell(
+                  columnName: 'datetime', value: dataGridRow.dateTimeStr),
               DataGridCell(columnName: 'temp', value: dataGridRow.temperature),
               DataGridCell(columnName: 'humidity', value: dataGridRow.humidity),
               DataGridCell(columnName: 'signer', value: dataGridRow.signer),
