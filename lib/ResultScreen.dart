@@ -72,7 +72,6 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (globalList.isNotEmpty) {
       this.txnList = globalList;
     } else {
@@ -154,6 +153,9 @@ class _ResultScreenState extends State<ResultScreen> {
                           _tempChartSeriesController = controller;
                         },
                         dataSource: txnList,
+                        // sortingOrder: SortingOrder.ascending,
+                        // sortFieldValueMapper: (Transaction transaction, _) =>
+                        //     transaction.dateTime,
                         xValueMapper: (Transaction transaction, _) =>
                             transaction.dateTime,
                         yValueMapper: (Transaction transaction, _) =>
@@ -198,6 +200,9 @@ class _ResultScreenState extends State<ResultScreen> {
                           _humidityChartSeriesController = controller;
                         },
                         dataSource: txnList,
+                        // sortingOrder: SortingOrder.ascending,
+                        // sortFieldValueMapper: (Transaction transaction, _) =>
+                        //     transaction.dateTime,
                         xValueMapper: (Transaction transaction, _) =>
                             transaction.dateTime,
                         yValueMapper: (Transaction transaction, _) =>
@@ -248,6 +253,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     headerRowHeight: 40.0,
                     rowHeight: 40.0,
                     source: txnDataSource,
+                    allowSorting: true,
                     columns: [
                       GridColumn(
                           columnName: 'datetime',
