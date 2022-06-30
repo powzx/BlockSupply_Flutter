@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:blocksupply_flutter/HomeScreen.dart';
+import 'package:blocksupply_flutter/JoinScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -29,7 +30,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return HomeScreen(client: this.client, uuid: this.uuid);
+          return JoinScreen(client: client, uuid: uuid,);
         },
       ),
     );

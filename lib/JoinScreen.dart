@@ -1,3 +1,5 @@
+import 'package:blocksupply_flutter/LoginScreen.dart';
+import 'package:blocksupply_flutter/RegisterScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -8,7 +10,7 @@ class JoinScreen extends StatefulWidget {
   JoinScreen({Key key, this.client, this.uuid}) : super(key: key);
 
   @override
-  _JoinScreenState createState() => _JoinScreenState();
+  _JoinScreenState createState() => _JoinScreenState(client: client, uuid: uuid);
 }
 
 class _JoinScreenState extends State<JoinScreen> with SingleTickerProviderStateMixin {
@@ -31,11 +33,12 @@ class _JoinScreenState extends State<JoinScreen> with SingleTickerProviderStateM
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
 
         title: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.grey,
-          labelColor: Colors.grey,
+          indicatorColor: Colors.teal,
+          labelColor: Colors.teal,
           unselectedLabelColor: Colors.grey,
           labelStyle: TextStyle(
             fontSize: 20.0,
@@ -59,8 +62,8 @@ class _JoinScreenState extends State<JoinScreen> with SingleTickerProviderStateM
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          LoginScreen(),
-          RegisterScreen(),
+          LoginScreen(client: client, uuid: uuid,),
+          RegisterScreen(client: client, uuid: uuid,),
         ],
       ),
     );
