@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:blocksupply_flutter/HomeScreen.dart';
-import 'package:blocksupply_flutter/JoinScreen.dart';
+import 'package:blocksupply_flutter/InitScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -30,7 +30,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return JoinScreen(client: client, uuid: uuid,);
+          return InitScreen(client: client, uuid: uuid,);
         },
       ),
     );
@@ -54,11 +54,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Welcome", // Replace with app title if any
+                "Hello.", // Replace with app title or logo if any
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal,
+                  color: Colors.orange,
                 ),
               )
             ],

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:blocksupply_flutter/LoadingScreen.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
+import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -29,6 +30,11 @@ Future<void> main() async {
   client = await mqttConnect();
   client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
 
+  // To remove secure data conveniently for debug purposes
+  // Comment these two lines for actual workflow
+  StorageService _storageService = StorageService();
+  _storageService.deleteAllSecureData();
+
   runApp(MyApp());
 }
 
@@ -37,7 +43,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BlockSupply',
-      //theme: Colors(),
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
       home: LoadingScreen(client: client, uuid: uuid,),
       debugShowCheckedModeBanner: false,
     );
