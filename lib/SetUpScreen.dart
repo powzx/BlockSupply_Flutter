@@ -1,7 +1,7 @@
 import 'package:blocksupply_flutter/LoginScreen.dart';
 import 'package:blocksupply_flutter/Signer.dart';
-import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class SetUpScreen extends StatefulWidget {
@@ -20,6 +20,8 @@ class _SetUpScreenState extends State<SetUpScreen> {
   final String uuid;
 
   _SetUpScreenState({this.client, this.uuid});
+
+  final LocalAuthentication _localAuthentication = new LocalAuthentication();
 
   String _name;
   String _email;
@@ -200,18 +202,27 @@ class _SetUpScreenState extends State<SetUpScreen> {
                 'Proceed',
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () {
+              onPressed: () async {
                 new Signer();
 
-
-
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (BuildContext context) {
-                  return LoginScreen(
-                    client: client,
-                    uuid: uuid,
+                bool isAuthenticated = false;
+                try {
+                  isAuthenticated = await _localAuthentication.authenticate(
+                    localizedReason: "Please authenticate to proceed",
                   );
-                }));
+                } catch (err) {
+                  print(err);
+                }
+
+                if (isAuthenticated) {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return LoginScreen(
+                      client: client,
+                      uuid: uuid,
+                    );
+                  }));
+                }
               },
             ),
           ),
