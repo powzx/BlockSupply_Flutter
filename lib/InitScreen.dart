@@ -81,27 +81,32 @@ class _InitScreenState extends State<InitScreen> {
       }
     });
 
-    client.subscribe("/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
-    client.subscribe("/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
-    client.subscribe("/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
+    client.subscribe(
+        "/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
+    client.subscribe(
+        "/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
+    client.subscribe(
+        "/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _storageService.readSecureData('blockchain_private_key'),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return LoginScreen(
-              client: client,
-              signer: signer,
-            );
-          } else {
-            return SetUpScreen(
-              client: client,
-              signer: signer,
-            );
-          }
-        });
+    return WillPopScope(
+        child: FutureBuilder(
+            future: _storageService.readSecureData('blockchain_private_key'),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return LoginScreen(
+                  client: client,
+                  signer: signer,
+                );
+              } else {
+                return SetUpScreen(
+                  client: client,
+                  signer: signer,
+                );
+              }
+            }),
+        onWillPop: () async => false);
   }
 }

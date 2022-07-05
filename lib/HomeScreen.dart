@@ -25,66 +25,68 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                "Enter Serial Number",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+    return WillPopScope(
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Enter Serial Number",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: TextField(
-                controller: serialNumController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Serial Number',
+              Padding(
+                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: TextField(
+                    controller: serialNumController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Serial Number',
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Align(
-              alignment: Alignment.center,
-              child: TextButton(
-                child: Text("REQUEST"),
-                onPressed: () {
-                  final serialNum = serialNumController.text;
+              Padding(
+                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    child: Text("REQUEST"),
+                    onPressed: () {
+                      final serialNum = serialNumController.text;
 
-                  var builder = MqttClientPayloadBuilder();
-                  String message =
-                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.signer.getPublicKeyHex()}\"}";
+                      var builder = MqttClientPayloadBuilder();
+                      String message =
+                          "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.signer.getPublicKeyHex()}\"}";
 
-                  builder.addString(message);
+                      builder.addString(message);
 
-                  client.publishMessage(
-                      getTopic, MqttQos.atLeastOnce, builder.payload);
-                  print(
-                      'Published message of topic: $getTopic and message: $message');
+                      client.publishMessage(
+                          getTopic, MqttQos.atLeastOnce, builder.payload);
+                      print(
+                          'Published message of topic: $getTopic and message: $message');
 
-                  serialNumController.clear();
-                },
+                      serialNumController.clear();
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+        onWillPop: () async => false);
   }
 }
