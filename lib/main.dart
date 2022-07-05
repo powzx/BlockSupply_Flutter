@@ -10,6 +10,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 MqttServerClient client;
 Signer signer;
+bool isNewUser;
 
 Future<void> setMyContext() async {
   ByteData caData = await rootBundle.load('data/ca.crt');
@@ -28,11 +29,10 @@ Future<Signer> initSigner() async {
   if (await _storageService.containsKeyInSecureData('blockchain_private_key')) {
     signer = new Signer.fromExisting(
         await _storageService.readSecureData('blockchain_private_key'));
-    print("Public key found: ${signer.getPublicKeyHex()}");
+    isNewUser = false;
   } else {
     signer = new Signer();
-    print(
-        "No keys found. Generated new public key: ${signer.getPublicKeyHex()}");
+    isNewUser = true;
   }
   return signer;
 }
@@ -63,6 +63,7 @@ class MyApp extends StatelessWidget {
       home: LoadingScreen(
         client: client,
         signer: signer,
+        isNewUser: isNewUser,
       ),
       debugShowCheckedModeBanner: false,
     );

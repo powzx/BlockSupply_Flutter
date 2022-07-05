@@ -11,7 +11,8 @@ class LoginScreen extends StatefulWidget {
   LoginScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState(client: client, signer: signer);
+  _LoginScreenState createState() =>
+      _LoginScreenState(client: client, signer: signer);
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -40,7 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          SizedBox(height: 50.0,),
+          SizedBox(
+            height: 50.0,
+          ),
           Container(
             height: 50.0,
             child: ElevatedButton(
@@ -52,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 var authenticator = new Authenticator();
 
                 bool isAuthenticatedWithFingerprint =
-                await authenticator.authenticateWithFingerPrint();
+                    await authenticator.authenticateWithFingerPrint();
 
                 if (isAuthenticatedWithFingerprint) {
                   Navigator.of(context)

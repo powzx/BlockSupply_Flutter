@@ -5,7 +5,6 @@ import 'package:blocksupply_flutter/ResultScreen.dart';
 import 'package:blocksupply_flutter/SetUpScreen.dart';
 import 'package:blocksupply_flutter/Signer.dart';
 import 'package:blocksupply_flutter/Transaction.dart';
-import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -13,27 +12,29 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 class InitScreen extends StatefulWidget {
   final MqttServerClient client;
   final Signer signer;
+  final bool isNewUser;
 
-  InitScreen({Key key, this.client, this.signer}) : super(key: key);
+  InitScreen({Key key, this.client, this.signer, this.isNewUser})
+      : super(key: key);
 
   @override
   _InitScreenState createState() =>
-      _InitScreenState(client: client, signer: signer);
+      _InitScreenState(client: client, signer: signer, isNewUser: isNewUser);
 }
 
 class _InitScreenState extends State<InitScreen> {
   final MqttServerClient client;
   final Signer signer;
+  final bool isNewUser;
 
-  _InitScreenState({this.client, this.signer});
-
-  StorageService _storageService = new StorageService();
+  _InitScreenState({this.client, this.signer, this.isNewUser});
 
   @override
   void initState() {
     super.initState();
+  }
 
-    // Attach dedicated listener
+  void attachListeners() {
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage message = c[0].payload;
       final topic = c[0].topic;
@@ -80,7 +81,9 @@ class _InitScreenState extends State<InitScreen> {
         print('No specified handler for this topic');
       }
     });
+  }
 
+  void subscribeToTopics() {
     client.subscribe(
         "/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
     client.subscribe(
@@ -91,22 +94,19 @@ class _InitScreenState extends State<InitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    attachListeners();
+    subscribeToTopics();
+
     return WillPopScope(
-        child: FutureBuilder(
-            future: _storageService.readSecureData('blockchain_private_key'),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                return LoginScreen(
-                  client: client,
-                  signer: signer,
-                );
-              } else {
-                return SetUpScreen(
-                  client: client,
-                  signer: signer,
-                );
-              }
-            }),
+        child: isNewUser
+            ? SetUpScreen(
+                client: client,
+                signer: signer,
+              )
+            : LoginScreen(
+                client: client,
+                signer: signer,
+              ),
         onWillPop: () async => false);
   }
 }

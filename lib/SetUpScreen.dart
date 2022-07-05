@@ -213,18 +213,37 @@ class _SetUpScreenState extends State<SetUpScreen> {
                   builder.addString(jsonEncode({
                     "publicKey": signer.getPublicKeyHex(),
                     "key": signer.getPublicKeyHex(),
-                    "data": {"name": _name, "email": _email, "mobile": _mobile},
+                    "data":
+                        '{"name": $_name, "email": $_email, "mobile": $_mobile}',
                   }));
                   client.publishMessage("/topic/dispatch/init",
                       MqttQos.atLeastOnce, builder.payload);
 
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (BuildContext context) {
-                    return LoginScreen(
-                      client: client,
-                      signer: signer,
-                    );
-                  }));
+                  signer.writeToSecureStorage();
+
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Success"),
+                          content: Text("Account created"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Login"),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                  return LoginScreen(
+                                    client: client,
+                                    signer: signer,
+                                  );
+                                }));
+                              },
+                            ),
+                          ],
+                        );
+                      });
                 }
               },
             ),

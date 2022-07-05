@@ -14,8 +14,7 @@ class Signer {
     _privateKey = curve.generatePrivateKey();
     _publicKey = _privateKey.publicKey;
 
-    _storageService.writeSecureData(
-        new StorageItem('blockchain_private_key', _privateKey.toHex()));
+    print('Created new public key: ${this.getPublicKeyHex()}');
   }
 
   Signer.fromExisting(String privateKey) {
@@ -23,6 +22,13 @@ class Signer {
 
     _privateKey = PrivateKey.fromHex(curve, privateKey);
     _publicKey = _privateKey.publicKey;
+
+    print('Found public key: ${this.getPublicKeyHex()}');
+  }
+
+  void writeToSecureStorage() {
+    _storageService.writeSecureData(
+        new StorageItem('blockchain_private_key', _privateKey.toHex()));
   }
 
   String getPublicKeyHex() {
