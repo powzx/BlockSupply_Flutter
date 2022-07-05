@@ -1,26 +1,26 @@
 import 'dart:async';
 
-import 'package:blocksupply_flutter/HomeScreen.dart';
 import 'package:blocksupply_flutter/InitScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:blocksupply_flutter/Signer.dart';
 
 class LoadingScreen extends StatefulWidget {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  LoadingScreen({Key key, this.client, this.uuid}) : super(key: key);
+  LoadingScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
   _LoadingScreenState createState() =>
-      _LoadingScreenState(client: client, uuid: uuid);
+      _LoadingScreenState(client: client, signer: signer);
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  _LoadingScreenState({this.client, this.uuid});
+  _LoadingScreenState({this.client, this.signer});
 
   startTimeout() {
     return Timer(Duration(seconds: 3), changeScreen);
@@ -30,7 +30,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return InitScreen(client: client, uuid: uuid,);
+          return InitScreen(client: client, signer: signer);
         },
       ),
     );

@@ -16,8 +16,6 @@ class Signer {
 
     _storageService.writeSecureData(
         new StorageItem('blockchain_private_key', _privateKey.toHex()));
-
-    print('Public Key generated: ${_publicKey.toCompressedHex()}');
   }
 
   Signer.fromExisting(String privateKey) {

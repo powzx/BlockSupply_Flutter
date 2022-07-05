@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:blocksupply_flutter/LoadingScreen.dart';
+import 'package:blocksupply_flutter/Signer.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:uuid/uuid.dart';
 
 MqttServerClient client;
-String uuid = Uuid().v1();
+Signer signer;
 
 Future<void> setMyContext() async {
   ByteData caData = await rootBundle.load('data/ca.crt');
@@ -23,12 +22,27 @@ Future<void> setMyContext() async {
     ..setClientAuthoritiesBytes(caData.buffer.asUint8List());
 }
 
+Future<Signer> initSigner() async {
+  StorageService _storageService = new StorageService();
+  Signer signer;
+  if (await _storageService.containsKeyInSecureData('blockchain_private_key')) {
+    signer = new Signer.fromExisting(
+        await _storageService.readSecureData('blockchain_private_key'));
+    print("Public key found: ${signer.getPublicKeyHex()}");
+  } else {
+    signer = new Signer();
+    print(
+        "No keys found. Generated new public key: ${signer.getPublicKeyHex()}");
+  }
+  return signer;
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setMyContext();
 
   client = await mqttConnect();
-  client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
+  signer = await initSigner();
 
   // To remove secure data conveniently for debug purposes
   // Comment these two lines for actual workflow
@@ -46,7 +60,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: LoadingScreen(client: client, uuid: uuid,),
+      home: LoadingScreen(
+        client: client,
+        signer: signer,
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

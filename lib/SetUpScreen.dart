@@ -9,22 +9,20 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 class SetUpScreen extends StatefulWidget {
   final MqttServerClient client;
-  final String uuid;
   final Signer signer;
 
-  SetUpScreen({Key key, this.client, this.uuid, this.signer}) : super(key: key);
+  SetUpScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
   _SetUpScreenState createState() =>
-      _SetUpScreenState(client: client, uuid: uuid, signer: signer);
+      _SetUpScreenState(client: client, signer: signer);
 }
 
 class _SetUpScreenState extends State<SetUpScreen> {
   final MqttServerClient client;
-  final String uuid;
   final Signer signer;
 
-  _SetUpScreenState({this.client, this.uuid, this.signer});
+  _SetUpScreenState({this.client, this.signer});
 
   String _name;
   String _email;
@@ -211,15 +209,11 @@ class _SetUpScreenState extends State<SetUpScreen> {
                     await authenticator.authenticateWithFingerPrint();
 
                 if (isAuthenticatedWithFingerprint) {
-
                   var builder = MqttClientPayloadBuilder();
                   builder.addString(jsonEncode({
                     "publicKey": signer.getPublicKeyHex(),
-                    "data": {
-                      "name": _name,
-                      "email": _email,
-                      "mobile": _mobile
-                    }
+                    "key": signer.getPublicKeyHex(),
+                    "data": {"name": _name, "email": _email, "mobile": _mobile},
                   }));
                   client.publishMessage("/topic/dispatch/init",
                       MqttQos.atLeastOnce, builder.payload);
@@ -228,7 +222,7 @@ class _SetUpScreenState extends State<SetUpScreen> {
                       .push(MaterialPageRoute(builder: (BuildContext context) {
                     return LoginScreen(
                       client: client,
-                      uuid: uuid,
+                      signer: signer,
                     );
                   }));
                 }

@@ -1,26 +1,25 @@
 import 'package:blocksupply_flutter/ResultScreen.dart';
+import 'package:blocksupply_flutter/Signer.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String title;
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  HomeScreen({Key key, this.title, this.client, this.uuid}) : super(key: key);
+  HomeScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
   _HomeScreenState createState() =>
-      _HomeScreenState(title: title, client: client, uuid: uuid);
+      _HomeScreenState(client: client, signer: signer);
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String title;
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  _HomeScreenState({this.title, this.client, this.uuid});
+  _HomeScreenState({this.client, this.signer});
 
   TextEditingController serialNumController = new TextEditingController();
 
@@ -28,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   var builder = MqttClientPayloadBuilder();
                   String message =
-                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.uuid}\"}";
+                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.signer.getPublicKeyHex()}\"}";
 
                   builder.addString(message);
 

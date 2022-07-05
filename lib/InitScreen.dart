@@ -12,40 +12,26 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 class InitScreen extends StatefulWidget {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  InitScreen({Key key, this.client, this.uuid}) : super(key: key);
+  InitScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
   _InitScreenState createState() =>
-      _InitScreenState(client: client, uuid: uuid);
+      _InitScreenState(client: client, signer: signer);
 }
 
 class _InitScreenState extends State<InitScreen> {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  _InitScreenState({this.client, this.uuid});
+  _InitScreenState({this.client, this.signer});
 
-  final StorageService _storageService = new StorageService();
-  Signer signer;
+  StorageService _storageService = new StorageService();
 
   @override
   void initState() {
     super.initState();
-
-    _storageService
-        .containsKeyInSecureData('blockchain_private_key')
-        .then((hasData) => {
-              if (hasData)
-                {
-                  _storageService
-                      .readSecureData('blockchain_private_key')
-                      .then((key) => signer = new Signer.fromExisting(key))
-                }
-              else
-                {signer = new Signer()}
-            });
 
     // Attach dedicated listener
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
@@ -56,7 +42,7 @@ class _InitScreenState extends State<InitScreen> {
 
       print('Received message: $payload from topic: $topic');
 
-      if (topic == "/topic/users/${this.uuid}") {
+      if (topic == "/topic/users/${signer.getPublicKeyHex()}") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (BuildContext context) {
           return ResultScreen(client: client, resultString: payload);
@@ -94,6 +80,10 @@ class _InitScreenState extends State<InitScreen> {
         print('No specified handler for this topic');
       }
     });
+
+    client.subscribe("/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
+    client.subscribe("/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
+    client.subscribe("/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
   }
 
   @override
@@ -104,13 +94,11 @@ class _InitScreenState extends State<InitScreen> {
           if (snapshot.hasData) {
             return LoginScreen(
               client: client,
-              uuid: uuid,
               signer: signer,
             );
           } else {
             return SetUpScreen(
               client: client,
-              uuid: uuid,
               signer: signer,
             );
           }
