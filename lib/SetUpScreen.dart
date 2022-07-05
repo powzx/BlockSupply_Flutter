@@ -1,27 +1,30 @@
+import 'dart:convert';
+
+import 'package:blocksupply_flutter/Authenticator.dart';
 import 'package:blocksupply_flutter/LoginScreen.dart';
 import 'package:blocksupply_flutter/Signer.dart';
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class SetUpScreen extends StatefulWidget {
   final MqttServerClient client;
   final String uuid;
+  final Signer signer;
 
-  SetUpScreen({Key key, this.client, this.uuid}) : super(key: key);
+  SetUpScreen({Key key, this.client, this.uuid, this.signer}) : super(key: key);
 
   @override
   _SetUpScreenState createState() =>
-      _SetUpScreenState(client: client, uuid: uuid);
+      _SetUpScreenState(client: client, uuid: uuid, signer: signer);
 }
 
 class _SetUpScreenState extends State<SetUpScreen> {
   final MqttServerClient client;
   final String uuid;
+  final Signer signer;
 
-  _SetUpScreenState({this.client, this.uuid});
-
-  final LocalAuthentication _localAuthentication = new LocalAuthentication();
+  _SetUpScreenState({this.client, this.uuid, this.signer});
 
   String _name;
   String _email;
@@ -184,7 +187,6 @@ class _SetUpScreenState extends State<SetUpScreen> {
                     color: Colors.black,
                   ),
                 ),
-                obscureText: true,
                 maxLines: 1,
                 onChanged: (value) {
                   setState(() {
@@ -203,18 +205,25 @@ class _SetUpScreenState extends State<SetUpScreen> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () async {
-                new Signer();
+                var authenticator = new Authenticator();
 
-                bool isAuthenticated = false;
-                try {
-                  isAuthenticated = await _localAuthentication.authenticate(
-                    localizedReason: "Please authenticate to proceed",
-                  );
-                } catch (err) {
-                  print(err);
-                }
+                bool isAuthenticatedWithFingerprint =
+                    await authenticator.authenticateWithFingerPrint();
 
-                if (isAuthenticated) {
+                if (isAuthenticatedWithFingerprint) {
+
+                  var builder = MqttClientPayloadBuilder();
+                  builder.addString(jsonEncode({
+                    "publicKey": signer.getPublicKeyHex(),
+                    "data": {
+                      "name": _name,
+                      "email": _email,
+                      "mobile": _mobile
+                    }
+                  }));
+                  client.publishMessage("/topic/dispatch/init",
+                      MqttQos.atLeastOnce, builder.payload);
+
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (BuildContext context) {
                     return LoginScreen(

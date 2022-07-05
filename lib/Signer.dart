@@ -1,13 +1,11 @@
 import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:ecdsa/ecdsa.dart';
 import 'package:elliptic/elliptic.dart';
-import 'package:local_auth/local_auth.dart';
 
 class Signer {
   PublicKey _publicKey;
   PrivateKey _privateKey;
 
-  final LocalAuthentication _localAuthentication = new LocalAuthentication();
   final StorageService _storageService = new StorageService();
 
   Signer() {
@@ -31,11 +29,6 @@ class Signer {
 
   String getPublicKeyHex() {
     return _publicKey.toCompressedHex();
-  }
-
-  Future<bool> checkingForBioMetrics() async {
-    bool canCheckBiometrics = await _localAuthentication.canCheckBiometrics;
-    return canCheckBiometrics;
   }
 
   String sign(List<int> bytes) {
