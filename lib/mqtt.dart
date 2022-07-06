@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:blocksupply_flutter/Signer.dart';
-import 'package:blocksupply_flutter/User.dart';
+import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/user.dart';
 import 'package:blocksupply_flutter/login_state.dart';
 import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:blocksupply_flutter/state_machine.dart';
@@ -86,30 +86,30 @@ void attachListeners() {
       //       '',
       //       ''));
       //   print('Received updated transaction');
-    } else if (topic == "/topic/${signer.getPublicKeyHex()}/txnHash") {
+    } else if (topic == "/topic/${signer.getPublicKeyHex()}/hash/txn") {
       print("Signing transaction hash: $payload");
       String txnSig = signer.sign(message.payload.message);
 
       var builder = MqttClientPayloadBuilder();
       builder.addString(txnSig);
-      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/txnSig",
+      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/sig/txn",
           MqttQos.atLeastOnce, builder.payload);
 
       print("Sending transaction signature: $txnSig");
-    } else if (topic == "/topic/${signer.getPublicKeyHex()}/batchHash") {
+    } else if (topic == "/topic/${signer.getPublicKeyHex()}/hash/batch") {
       print("Signing batch hash: $payload");
       String batchSig = signer.sign(message.payload.message);
 
       var builder = MqttClientPayloadBuilder();
       builder.addString(batchSig);
-      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/batchSig",
+      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/sig/batch",
           MqttQos.atLeastOnce, builder.payload);
 
       print("Sending batch signature: $batchSig");
     } else if (topic == "/topic/${signer.getPublicKeyHex()}/user/details") {
       print("Received user details: $payload");
-      User user = new User(jsonDecode(payload), signer);
-      loginStreamController.sink.add(user);
+      user = new User(jsonDecode(payload), signer);
+      updateLoginSubState(LoginSubState.SUCCESS);
     } else if (topic == "/topic/${signer.getPublicKeyHex()}/response") {
       updateSetUpSubState(SetUpSubState.SUCCESS);
     } else {
@@ -122,9 +122,9 @@ void subscribeToTopics() {
   mqttClient.subscribe(
       "/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
   mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/hash/txn", MqttQos.atLeastOnce);
   mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/hash/batch", MqttQos.atLeastOnce);
   mqttClient.subscribe(
       "/topic/${signer.getPublicKeyHex()}/user/details", MqttQos.atLeastOnce);
   mqttClient.subscribe(

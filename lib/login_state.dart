@@ -1,81 +1,83 @@
 import 'dart:async';
 
-import 'package:blocksupply_flutter/Authenticator.dart';
-import 'package:blocksupply_flutter/Signer.dart';
-import 'package:blocksupply_flutter/User.dart';
+import 'package:blocksupply_flutter/authenticator.dart';
+import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/user.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/state_machine.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-StreamController<User> loginStreamController =
-    new StreamController<User>();
+enum LoginSubState {
+  WAITING,
+  SUCCESS,
+}
 
-void updateLoginSubState(User user) {
-  loginStreamController.sink.add(user);
+StreamController<LoginSubState> loginStreamController = new StreamController<LoginSubState>();
+
+void updateLoginSubState(LoginSubState subState) {
+  loginStreamController.sink.add(subState);
 }
 
 class LoginState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     var builder = MqttClientPayloadBuilder();
     String message = "{\"publicKey\":\"${signer.getPublicKeyHex()}\"}";
     builder.addString(message);
     mqttClient.publishMessage(
         "/topic/dispatch/user/get", MqttQos.atLeastOnce, builder.payload);
 
-    return StreamBuilder(
-        stream: loginStreamController.stream,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.only(
-                    top: 25.0,
-                  ),
-                  child: snapshot.data == null
-                      ? Text(
-                          "Welcome back",
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      : Text(
-                          "Welcome back, ${snapshot.data.name}",
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )),
-              SizedBox(
-                height: 50.0,
-              ),
-              Container(
-                height: 50.0,
-                child: ElevatedButton(
-                  child: Text(
-                    'Tap to login',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () async {
-                    var authenticator = new Authenticator();
+    final snapshot = context.watch<LoginSubState>();
 
-                    bool isAuthenticatedWithFingerprint =
-                        await authenticator.authenticateWithFingerPrint();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(
+              top: 25.0,
+            ),
+            child: snapshot == LoginSubState.WAITING
+                ? Text(
+                    "Welcome back",
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                : Text(
+                    "Welcome back, ${user.name}",
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )),
+        SizedBox(
+          height: 50.0,
+        ),
+        Container(
+          height: 50.0,
+          child: ElevatedButton(
+            child: Text(
+              'Tap to login',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () async {
+              var authenticator = new Authenticator();
 
-                    if (isAuthenticatedWithFingerprint) {
-                      updateState(States.HOME);
-                    }
-                  },
-                ),
-              ),
-            ],
-          );
-        });
+              bool isAuthenticatedWithFingerprint =
+                  await authenticator.authenticateWithFingerPrint();
+
+              if (isAuthenticatedWithFingerprint) {
+                updateState(States.HOME);
+              }
+            },
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:blocksupply_flutter/Signer.dart';
+import 'package:blocksupply_flutter/signer.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:blocksupply_flutter/state_machine.dart';

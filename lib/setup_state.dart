@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:blocksupply_flutter/Authenticator.dart';
-import 'package:blocksupply_flutter/Signer.dart';
+import 'package:blocksupply_flutter/authenticator.dart';
+import 'package:blocksupply_flutter/signer.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/state_machine.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +26,29 @@ class SetUpState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final snapshot = context.watch<SetUpSubState>();
+
+    if (snapshot == SetUpSubState.SUCCESS) {
+      signer.writeToSecureStorage();
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Success"),
+              content: Text("Account created"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Login"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    updateState(States.LOGIN);
+                  },
+                ),
+              ],
+            );
+          });
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -202,30 +225,8 @@ class SetUpState extends StatelessWidget {
                     "mobile": _mobileController.text
                   },
                 }));
-                mqttClient.publishMessage("/topic/dispatch/init",
+                mqttClient.publishMessage("/topic/dispatch/user/init",
                     MqttQos.atLeastOnce, builder.payload);
-
-                if (snapshot == SetUpSubState.SUCCESS) {
-                  signer.writeToSecureStorage();
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Success"),
-                          content: Text("Account created"),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text("Login"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                updateState(States.LOGIN);
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                }
               }
             },
           ),

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:blocksupply_flutter/Signer.dart';
+import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/login_state.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:blocksupply_flutter/state_machine.dart';
@@ -15,8 +16,8 @@ Future<void> main() async {
 
   // To remove secure data conveniently for debug purposes
   // Comment these two lines for actual workflow
-  StorageService _storageService = StorageService();
-  _storageService.deleteAllSecureData();
+  // StorageService _storageService = StorageService();
+  // _storageService.deleteAllSecureData();
 
   runApp(MyApp());
 }
@@ -36,8 +37,12 @@ class MyApp extends StatelessWidget {
             create: (context) {
               return setupStreamController.stream;
             },
-            initialData: SetUpSubState.WAITING
-        ),
+            initialData: SetUpSubState.WAITING),
+        StreamProvider<LoginSubState>(
+            create: (context) {
+              return loginStreamController.stream;
+            },
+            initialData: LoginSubState.WAITING)
       ],
       child: MaterialApp(
         title: 'BlockSupply',

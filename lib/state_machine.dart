@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:blocksupply_flutter/error_state.dart';
+import 'package:blocksupply_flutter/home_state.dart';
 import 'package:blocksupply_flutter/loading_state.dart';
 import 'package:blocksupply_flutter/login_state.dart';
+import 'package:blocksupply_flutter/result_state.dart';
 import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,11 +41,11 @@ class _StateMachineState extends State<StateMachine> {
     } else if (state == States.SETUP) {
       return SetUpState();
     } else if (state == States.HOME) {
-      return Column();
+      return HomeState();
     } else if (state == States.RESULT) {
-      return Column();
+      return ResultState();
     } else {
-      return Column();
+      return ErrorState();
       // Navigator.of(context).push(
       //   MaterialPageRoute(builder: (BuildContext context) {
       //     return AlertDialog(
