@@ -1,30 +1,44 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-SecurityContext myContext;
-
-final identifier = 'Flutter-Client-1';
+MqttServerClient mqttClient;
+final identifier = 'Flutter-Client';
 final serverIp = '192.168.11.109';
 
+Future<SecurityContext> setMyContext() async {
+  ByteData caData = await rootBundle.load('data/ca.crt');
+  ByteData keyData = await rootBundle.load('data/client.key');
+  ByteData certData = await rootBundle.load('data/client.crt');
+
+  SecurityContext myContext = new SecurityContext()
+    ..useCertificateChainBytes(certData.buffer.asUint8List())
+    ..usePrivateKeyBytes(keyData.buffer.asUint8List())
+    ..setClientAuthoritiesBytes(caData.buffer.asUint8List());
+
+  return myContext;
+}
+
 Future<MqttServerClient> mqttConnect() async {
-  MqttServerClient client =
-      MqttServerClient.withPort(serverIp, identifier, 8883)
-        ..onBadCertificate = (dynamic x509certificate) {
-          return true;
-        }; // work around for self signed certificates
+  SecurityContext myContext = await setMyContext();
 
-  client.secure = true;
-  client.securityContext = myContext;
+  mqttClient = MqttServerClient.withPort(serverIp, identifier, 8883)
+    ..onBadCertificate = (dynamic x509certificate) {
+      return true;
+    }; // work around for self signed certificates
 
-  client.logging(on: false);
-  client.onConnected = onConnected;
-  client.onDisconnected = onDisconnected;
-  client.onSubscribed = onSubscribed;
-  client.onUnsubscribed = onUnsubscribed;
-  client.onSubscribeFail = onSubscribeFail;
-  client.pongCallback = pong;
+  mqttClient.secure = true;
+  mqttClient.securityContext = myContext;
+
+  mqttClient.logging(on: false);
+  mqttClient.onConnected = onConnected;
+  mqttClient.onDisconnected = onDisconnected;
+  mqttClient.onSubscribed = onSubscribed;
+  mqttClient.onUnsubscribed = onUnsubscribed;
+  mqttClient.onSubscribeFail = onSubscribeFail;
+  mqttClient.pongCallback = pong;
 
   final connMessage = MqttConnectMessage()
       .withWillTopic('willtopic')
@@ -32,16 +46,16 @@ Future<MqttServerClient> mqttConnect() async {
       .startClean()
       .withWillQos(MqttQos.atLeastOnce);
 
-  client.connectionMessage = connMessage;
+  mqttClient.connectionMessage = connMessage;
 
   try {
-    await client.connect();
+    await mqttClient.connect();
   } catch (exception) {
     print('Exception: $exception');
-    client.disconnect();
+    mqttClient.disconnect();
   }
 
-  return client;
+  return mqttClient;
 }
 
 void onConnected() {

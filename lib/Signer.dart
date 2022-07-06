@@ -5,6 +5,7 @@ import 'package:elliptic/elliptic.dart';
 class Signer {
   PublicKey _publicKey;
   PrivateKey _privateKey;
+  bool hasSetUp;
 
   final StorageService _storageService = new StorageService();
 
@@ -14,6 +15,8 @@ class Signer {
     _privateKey = curve.generatePrivateKey();
     _publicKey = _privateKey.publicKey;
 
+    hasSetUp = false;
+
     print('Created new public key: ${this.getPublicKeyHex()}');
   }
 
@@ -22,6 +25,8 @@ class Signer {
 
     _privateKey = PrivateKey.fromHex(curve, privateKey);
     _publicKey = _privateKey.publicKey;
+
+    hasSetUp = true;
 
     print('Found public key: ${this.getPublicKeyHex()}');
   }

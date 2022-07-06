@@ -1,27 +1,13 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:blocksupply_flutter/LoadingScreen.dart';
 import 'package:blocksupply_flutter/Signer.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
+import 'package:blocksupply_flutter/state_machine.dart';
 import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 MqttServerClient client;
 Signer signer;
-bool isNewUser;
-
-Future<void> setMyContext() async {
-  ByteData caData = await rootBundle.load('data/ca.crt');
-  ByteData keyData = await rootBundle.load('data/client.key');
-  ByteData certData = await rootBundle.load('data/client.crt');
-
-  myContext = new SecurityContext()
-    ..useCertificateChainBytes(certData.buffer.asUint8List())
-    ..usePrivateKeyBytes(keyData.buffer.asUint8List())
-    ..setClientAuthoritiesBytes(caData.buffer.asUint8List());
-}
 
 Future<Signer> initSigner() async {
   StorageService _storageService = new StorageService();
@@ -29,17 +15,14 @@ Future<Signer> initSigner() async {
   if (await _storageService.containsKeyInSecureData('blockchain_private_key')) {
     signer = new Signer.fromExisting(
         await _storageService.readSecureData('blockchain_private_key'));
-    isNewUser = false;
   } else {
     signer = new Signer();
-    isNewUser = true;
   }
   return signer;
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setMyContext();
 
   client = await mqttConnect();
   signer = await initSigner();
@@ -55,15 +38,15 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    updateState(States.LOADING);
     return MaterialApp(
       title: 'BlockSupply',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: LoadingScreen(
+      home: StateMachine(
         client: client,
         signer: signer,
-        isNewUser: isNewUser,
       ),
       debugShowCheckedModeBanner: false,
     );
