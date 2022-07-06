@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:blocksupply_flutter/Signer.dart';
 import 'package:blocksupply_flutter/loading_state.dart';
-import 'package:blocksupply_flutter/main.dart';
+import 'package:blocksupply_flutter/login_state.dart';
+import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum States {
   LOADING,
@@ -21,10 +21,8 @@ void updateState(States state) {
 }
 
 class StateMachine extends StatefulWidget {
-  final MqttServerClient client;
-  final Signer signer;
 
-  StateMachine({Key key, this.client, this.signer}) : super(key: key);
+  StateMachine({Key key}) : super(key: key);
 
   @override
   _StateMachineState createState() => _StateMachineState();
@@ -34,14 +32,11 @@ class _StateMachineState extends State<StateMachine> {
 
   Widget _renderState(States state) {
     if (state == States.LOADING) {
-      return LoadingState(
-        client: client,
-        signer: signer,
-      );
+      return LoadingState();
     } else if (state == States.LOGIN) {
-      return Column();
+      return LoginState();
     } else if (state == States.SETUP) {
-      return Column();
+      return SetUpState();
     } else if (state == States.HOME) {
       return Column();
     } else if (state == States.RESULT) {
@@ -70,10 +65,7 @@ class _StateMachineState extends State<StateMachine> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        body: StreamBuilder(
-          stream: stateStreamController.stream,
-          builder: (BuildContext context, AsyncSnapshot snapshot) =>
-              _renderState(snapshot.data),
-        ));
+        body: _renderState(context.watch<States>()),
+    );
   }
 }

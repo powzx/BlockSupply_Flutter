@@ -1,31 +1,17 @@
 import 'dart:async';
 import 'package:blocksupply_flutter/Signer.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
+import 'package:blocksupply_flutter/setup_state.dart';
 import 'package:blocksupply_flutter/state_machine.dart';
 import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-
-MqttServerClient client;
-Signer signer;
-
-Future<Signer> initSigner() async {
-  StorageService _storageService = new StorageService();
-  Signer signer;
-  if (await _storageService.containsKeyInSecureData('blockchain_private_key')) {
-    signer = new Signer.fromExisting(
-        await _storageService.readSecureData('blockchain_private_key'));
-  } else {
-    signer = new Signer();
-  }
-  return signer;
-}
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  client = await mqttConnect();
-  signer = await initSigner();
+  await mqttConnect();
+  await initSigner();
 
   // To remove secure data conveniently for debug purposes
   // Comment these two lines for actual workflow
@@ -38,17 +24,29 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    updateState(States.LOADING);
-    return MaterialApp(
-      title: 'BlockSupply',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
+    return MultiProvider(
+      providers: [
+        StreamProvider<States>(
+          create: (context) {
+            return stateStreamController.stream;
+          },
+          initialData: States.LOADING,
+        ),
+        StreamProvider<SetUpSubState>(
+            create: (context) {
+              return setupStreamController.stream;
+            },
+            initialData: SetUpSubState.WAITING
+        ),
+      ],
+      child: MaterialApp(
+        title: 'BlockSupply',
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
+        ),
+        home: StateMachine(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: StateMachine(
-        client: client,
-        signer: signer,
-      ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
