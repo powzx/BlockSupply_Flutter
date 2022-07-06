@@ -1,5 +1,5 @@
-import 'package:blocksupply_flutter/Signer.dart';
-import 'package:blocksupply_flutter/mqtt.dart';
+import 'package:blocksupply_flutter/common/signer.dart';
+import 'package:blocksupply_flutter/common/mqtt.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/common/signer.dart';
 
 User user;
 

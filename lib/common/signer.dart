@@ -1,4 +1,4 @@
-import 'package:blocksupply_flutter/storage_service.dart';
+import 'package:blocksupply_flutter/common/storage_service.dart';
 import 'package:ecdsa/ecdsa.dart';
 import 'package:elliptic/elliptic.dart';
 

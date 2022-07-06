@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:blocksupply_flutter/error_state.dart';
-import 'package:blocksupply_flutter/home_state.dart';
-import 'package:blocksupply_flutter/loading_state.dart';
-import 'package:blocksupply_flutter/login_state.dart';
-import 'package:blocksupply_flutter/result_state.dart';
-import 'package:blocksupply_flutter/setup_state.dart';
+import 'package:blocksupply_flutter/states/error_state.dart';
+import 'package:blocksupply_flutter/states/home_state.dart';
+import 'package:blocksupply_flutter/states/loading_state.dart';
+import 'package:blocksupply_flutter/states/login_state.dart';
+import 'package:blocksupply_flutter/states/result_state.dart';
+import 'package:blocksupply_flutter/states/setup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

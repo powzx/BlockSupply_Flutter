@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:blocksupply_flutter/signer.dart';
-import 'package:blocksupply_flutter/login_state.dart';
-import 'package:blocksupply_flutter/mqtt.dart';
-import 'package:blocksupply_flutter/setup_state.dart';
-import 'package:blocksupply_flutter/state_machine.dart';
-import 'package:blocksupply_flutter/storage_service.dart';
+import 'package:blocksupply_flutter/common/signer.dart';
+import 'package:blocksupply_flutter/states/login_state.dart';
+import 'package:blocksupply_flutter/common/mqtt.dart';
+import 'package:blocksupply_flutter/states/setup_state.dart';
+import 'package:blocksupply_flutter/states/state_machine.dart';
+import 'package:blocksupply_flutter/common/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
