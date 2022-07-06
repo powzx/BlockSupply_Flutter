@@ -22,11 +22,7 @@ class LoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    attachListeners();
-    subscribeToTopics();
-
     startTimeout();
-
     return Container(
         margin: EdgeInsets.only(left: 40.0, right: 40.0),
         child: Center(
