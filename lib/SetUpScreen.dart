@@ -213,8 +213,11 @@ class _SetUpScreenState extends State<SetUpScreen> {
                   builder.addString(jsonEncode({
                     "publicKey": signer.getPublicKeyHex(),
                     "key": signer.getPublicKeyHex(),
-                    "data":
-                        '{"name": $_name, "email": $_email, "mobile": $_mobile}',
+                    "data": {
+                      "name": _name,
+                      "email": _email,
+                      "mobile": _mobile
+                    },
                   }));
                   client.publishMessage("/topic/dispatch/init",
                       MqttQos.atLeastOnce, builder.payload);

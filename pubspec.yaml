@@ -39,6 +39,7 @@ dependencies:
   syncfusion_flutter_core: ^20.1.61
   flutter_secure_storage: ^5.0.2
   local_auth: ^2.1.0
+  flutter_bloc: ^8.0.1
 
 dev_dependencies:
   flutter_test:

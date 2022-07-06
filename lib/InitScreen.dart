@@ -77,6 +77,9 @@ class _InitScreenState extends State<InitScreen> {
             MqttQos.atLeastOnce, builder.payload);
 
         print("Sending batch signature: $batchSig");
+      } else if (topic == "/topic/${signer.getPublicKeyHex()}/details") {
+        print("Received user details: $payload");
+        user.setEntries(jsonDecode(payload));
       } else {
         print('No specified handler for this topic');
       }
@@ -90,6 +93,8 @@ class _InitScreenState extends State<InitScreen> {
         "/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
     client.subscribe(
         "/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
+    client.subscribe(
+        "/topic/${signer.getPublicKeyHex()}/details", MqttQos.atLeastOnce);
   }
 
   @override
