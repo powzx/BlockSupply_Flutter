@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:blocksupply_flutter/common/mqtt.dart';
+import 'package:blocksupply_flutter/states/draft_contract_state.dart';
 import 'package:blocksupply_flutter/states/error_state.dart';
+import 'package:blocksupply_flutter/states/retrieve_data_state.dart';
 import 'package:blocksupply_flutter/states/home_state.dart';
 import 'package:blocksupply_flutter/states/loading_state.dart';
 import 'package:blocksupply_flutter/states/login_state.dart';
 import 'package:blocksupply_flutter/states/result_state.dart';
 import 'package:blocksupply_flutter/states/setup_state.dart';
 import 'package:blocksupply_flutter/states/state_stack.dart';
+import 'package:blocksupply_flutter/states/view_contract_list_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,6 +19,10 @@ enum States {
   SETUP,
   LOGIN,
   HOME,
+  DRAFT_CONTRACT,
+  VIEW_CONTRACT_LIST,
+  VIEW_CONTRACT_DETAILS,
+  RETRIEVE_DATA,
   RESULT,
 }
 
@@ -44,6 +51,12 @@ class _StateMachineState extends State<StateMachine> {
       return SetUpState();
     } else if (state == States.HOME) {
       return HomeState();
+    } else if (state == States.DRAFT_CONTRACT) {
+      return DraftContractState();
+    } else if (state == States.VIEW_CONTRACT_LIST) {
+      return ViewContractListState();
+    } else if (state == States.RETRIEVE_DATA) {
+      return RetrieveDataState();
     } else if (state == States.RESULT) {
       return ResultState();
     } else {
