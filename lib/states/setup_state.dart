@@ -29,7 +29,7 @@ class SetUpState extends StatelessWidget {
 
     if (snapshot == SetUpSubState.SUCCESS) {
       signer.writeToSecureStorage();
-      showDialog(
+      Future.delayed(Duration.zero, () => showDialog(
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
@@ -46,7 +46,7 @@ class SetUpState extends StatelessWidget {
                 ),
               ],
             );
-          });
+          }));
     }
 
     return Column(
