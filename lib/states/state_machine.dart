@@ -93,9 +93,12 @@ class _StateMachineState extends State<StateMachine> {
     //       }
     //       return true;
     //     });
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _renderState(context.watch<States>()),
+    return WillPopScope(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: _renderState(context.watch<States>()),
+      ),
+      onWillPop: () async => false,
     );
   }
 }
