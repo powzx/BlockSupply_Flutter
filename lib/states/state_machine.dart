@@ -33,7 +33,7 @@ class StateMachine extends StatefulWidget {
 }
 
 class _StateMachineState extends State<StateMachine> {
-  StateStack stack = new StateStack();
+  // StateStack stack = new StateStack();
 
   Widget _renderState(States state) {
     if (state == States.LOADING) {
@@ -60,25 +60,29 @@ class _StateMachineState extends State<StateMachine> {
 
   @override
   Widget build(BuildContext context) {
-    final snapshot = context.watch<States>();
-    if (snapshot != null) {
-      stack.push(snapshot);
-      print(stack);
-    }
-
-    return WillPopScope(
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: _renderState(snapshot),
-        ),
-        onWillPop: () async {
-          stack.pop();
-          print(stack);
-          if (stack.stack.isNotEmpty) {
-            updateState(stack.stack.last);
-            return false;
-          }
-          return true;
-        });
+    // final snapshot = context.watch<States>();
+    // if (snapshot != null) {
+    //   stack.push(snapshot);
+    //   print(stack);
+    // }
+    //
+    // return WillPopScope(
+    //     child: Scaffold(
+    //       backgroundColor: Colors.white,
+    //       body: _renderState(snapshot),
+    //     ),
+    //     onWillPop: () async {
+    //       stack.pop();
+    //       print(stack);
+    //       if (stack.stack.isNotEmpty) {
+    //         updateState(stack.stack.last);
+    //         return false;
+    //       }
+    //       return true;
+    //     });
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: _renderState(context.watch<States>()),
+    );
   }
 }
