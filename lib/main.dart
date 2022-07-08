@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:blocksupply_flutter/home_screen.dart';
+import 'package:blocksupply_flutter/init_screen.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:blocksupply_flutter/signer.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: HomeScreen(
+      home: InitScreen(
         client: client,
         signer: signer,
       ),
