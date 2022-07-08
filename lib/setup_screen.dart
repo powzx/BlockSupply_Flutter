@@ -26,97 +26,99 @@ class _SetupScreen extends State<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-          Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(
-              top: 25.0,
-            ),
-            child: Text(
-              "Set up an account",
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 30.0,
-          ),
-          Card(
-            elevation: 3.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5.0),
+    return WillPopScope(
+        child: Scaffold(
+            body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+              Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(
+                  top: 25.0,
+                ),
+                child: Text(
+                  "Set up an account",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              child: TextField(
-                controller: _nameController,
-                style: TextStyle(
-                  fontSize: 15.0,
-                  color: Colors.black,
-                ),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(
-                      color: Colors.white,
+              SizedBox(
+                height: 30.0,
+              ),
+              Card(
+                elevation: 3.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5.0),
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
+                  child: TextField(
+                    controller: _nameController,
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.black,
                     ),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  hintText: "Name",
-                  prefixIcon: Icon(
-                    Icons.account_circle_outlined,
-                    color: Colors.black,
-                  ),
-                  hintStyle: TextStyle(
-                    fontSize: 15.0,
-                    color: Colors.black,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      hintText: "Name",
+                      prefixIcon: Icon(
+                        Icons.account_circle_outlined,
+                        color: Colors.black,
+                      ),
+                      hintStyle: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    maxLines: 1,
                   ),
                 ),
-                maxLines: 1,
               ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Container(
-            height: 50.0,
-            child: ElevatedButton(
-              child: Text(
-                'Proceed',
-                style: TextStyle(color: Colors.white),
+              SizedBox(height: 20.0),
+              Container(
+                height: 50.0,
+                child: ElevatedButton(
+                  child: Text(
+                    'Proceed',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    var authenticator = new Authenticator();
+
+                    bool isAuthenticatedWithFingerprint =
+                        await authenticator.authenticateWithFingerPrint();
+
+                    if (isAuthenticatedWithFingerprint) {
+                      var builder = MqttClientPayloadBuilder();
+                      builder.addString(jsonEncode({
+                        "publicKey": signer.getPublicKeyHex(),
+                        "key": signer.getPublicKeyHex(),
+                        "data": _nameController.text,
+                      }));
+                      client.publishMessage("/topic/dispatch/init",
+                          MqttQos.atLeastOnce, builder.payload);
+                    }
+                  },
+                ),
               ),
-              onPressed: () async {
-                var authenticator = new Authenticator();
-
-                bool isAuthenticatedWithFingerprint =
-                    await authenticator.authenticateWithFingerPrint();
-
-                if (isAuthenticatedWithFingerprint) {
-                  var builder = MqttClientPayloadBuilder();
-                  builder.addString(jsonEncode({
-                    "publicKey": signer.getPublicKeyHex(),
-                    "key": signer.getPublicKeyHex(),
-                    "data": _nameController.text,
-                  }));
-                  client.publishMessage("/topic/dispatch/init",
-                      MqttQos.atLeastOnce, builder.payload);
-                }
-              },
-            ),
-          ),
-        ]));
+            ])),
+        onWillPop: () async => false);
   }
 }

@@ -22,53 +22,55 @@ class _LoginScreen extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.only(
-                top: 25.0,
+    return WillPopScope(
+        child: Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(
+                    top: 25.0,
+                  ),
+                  child: Text(
+                    "Welcome back",
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )),
+              SizedBox(
+                height: 50.0,
               ),
-              child: Text(
-                "Welcome back",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w700,
+              Container(
+                height: 50.0,
+                child: ElevatedButton(
+                  child: Text(
+                    'Tap to login',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    var authenticator = new Authenticator();
+
+                    bool isAuthenticatedWithFingerprint =
+                        await authenticator.authenticateWithFingerPrint();
+
+                    if (isAuthenticatedWithFingerprint) {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return HomeScreen(
+                          client: client,
+                          signer: signer,
+                        );
+                      }));
+                    }
+                  },
                 ),
-              )),
-          SizedBox(
-            height: 50.0,
-          ),
-          Container(
-            height: 50.0,
-            child: ElevatedButton(
-              child: Text(
-                'Tap to login',
-                style: TextStyle(color: Colors.white),
               ),
-              onPressed: () async {
-                var authenticator = new Authenticator();
-
-                bool isAuthenticatedWithFingerprint =
-                    await authenticator.authenticateWithFingerPrint();
-
-                if (isAuthenticatedWithFingerprint) {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (BuildContext context) {
-                    return HomeScreen(
-                      client: client,
-                      signer: signer,
-                    );
-                  }));
-                }
-              },
-            ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+        onWillPop: () async => false);
   }
 }
