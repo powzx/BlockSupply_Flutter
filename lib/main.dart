@@ -26,6 +26,7 @@ Future<void> main() async {
   await setMyContext();
 
   signer = await initSigner();
+  signer.writeToSecureStorage();
 
   client = await mqttConnect();
   subscribeToTopics(client, signer);

@@ -17,6 +17,8 @@ class _SetupScreen extends State<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column();
+    return Scaffold(
+
+    );
   }
 }

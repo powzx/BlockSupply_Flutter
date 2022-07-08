@@ -46,7 +46,8 @@ Future<MqttServerClient> mqttConnect() async {
 }
 
 void subscribeToTopics(MqttServerClient client, Signer signer) {
-  client.subscribe("/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
+  client.subscribe("/topic/${signer.getPublicKeyHex()}/response/post", MqttQos.atLeastOnce);
+  client.subscribe("/topic/${signer.getPublicKeyHex()}/response/get", MqttQos.atLeastOnce);
 }
 
 void onConnected() {

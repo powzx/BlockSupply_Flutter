@@ -39,11 +39,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
       print('Received message: $payload from topic: $topic');
 
-      if (topic == "/topic/users/${this.signer.getPublicKeyHex()}") {
+      if (topic == "/topic/${this.signer.getPublicKeyHex()}/response/get") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (BuildContext context) {
           return ResultScreen(client: client, resultString: payload);
         }));
+      } else if (topic ==
+          "/topic/${this.signer.getPublicKeyHex()}/response/post") {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Success"),
+                content: Text("Account created!"),
+                actions: <Widget>[
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("OK")),
+                ],
+              );
+            });
       } else if (topic == updateTopic) {
         final newPayloadJson = json.decode(payload);
         newTxnList.add(new Transaction(
