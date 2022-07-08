@@ -54,7 +54,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
     this.resultJson = json.decode(resultString);
     this.serialNum = this.resultJson['serialNum'];
-    updateTopic = '/topic/updates/${this.serialNum}';
+    updateTopic = '/topic/${this.serialNum}/response/post';
 
     client.subscribe(updateTopic, MqttQos.atLeastOnce);
     timer = Timer.periodic(const Duration(seconds: 5), _updateDataSource);

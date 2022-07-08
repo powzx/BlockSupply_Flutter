@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:blocksupply_flutter/home_screen.dart';
+import 'package:blocksupply_flutter/init_screen.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
+import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:uuid/uuid.dart';
 
 MqttServerClient client;
-String uuid = Uuid().v1();
+Signer signer;
 
 Future<void> setMyContext() async {
   ByteData caData = await rootBundle.load('data/ca.crt');
@@ -26,8 +27,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setMyContext();
 
+  // To remove secure data conveniently for debug purposes
+  // Comment these two lines for actual workflow
+  // StorageService _storageService = StorageService();
+  // _storageService.deleteAllSecureData();
+
+  signer = await initSigner();
+  signer.writePrivateKeyToSecureStorage();
+  signer.checkSetup();
+
   client = await mqttConnect();
-  client.subscribe("/topic/users/$uuid", MqttQos.atLeastOnce);
+  subscribeToTopics(client, signer);
 
   runApp(MyApp());
 }
@@ -40,10 +50,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: HomeScreen(
-        title: 'BlockSupply',
+      home: InitScreen(
         client: client,
-        uuid: uuid,
+        signer: signer,
       ),
       debugShowCheckedModeBanner: false,
     );
