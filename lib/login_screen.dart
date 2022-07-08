@@ -34,7 +34,7 @@ class _LoginScreen extends State<LoginScreen> {
                     top: 25.0,
                   ),
                   child: Text(
-                    "Welcome back",
+                    "Welcome back, ${this.signer.username}",
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.w700,

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
+String username = '';
+
 class SetupScreen extends StatefulWidget {
   final MqttServerClient client;
   final Signer signer;
@@ -114,6 +116,8 @@ class _SetupScreen extends State<SetupScreen> {
                       }));
                       client.publishMessage("/topic/dispatch/init",
                           MqttQos.atLeastOnce, builder.payload);
+
+                      username = _nameController.text;
                     }
                   },
                 ),

@@ -17,7 +17,8 @@ Future<Signer> initSigner() async {
 class Signer {
   PublicKey _publicKey;
   PrivateKey _privateKey;
-  bool hasSetUp;
+  String username;
+  bool hasSetUp = false;
 
   final StorageService _storageService = new StorageService();
 
@@ -26,8 +27,6 @@ class Signer {
 
     _privateKey = curve.generatePrivateKey();
     _publicKey = _privateKey.publicKey;
-
-    hasSetUp = false;
 
     print('Created new public key: ${this.getPublicKeyHex()}');
   }
@@ -38,12 +37,23 @@ class Signer {
     _privateKey = PrivateKey.fromHex(curve, privateKey);
     _publicKey = _privateKey.publicKey;
 
-    hasSetUp = true;
-
     print('Found public key: ${this.getPublicKeyHex()}');
   }
 
-  void writeToSecureStorage() {
+  void checkSetup() async {
+    if (await _storageService.containsKeyInSecureData('blockchain_username')) {
+      this.username = await _storageService.readSecureData('blockchain_username');
+      this.hasSetUp = true;
+    }
+  }
+
+  void writeUsernameToSecureStorage(String username) {
+    this.username = username;
+    _storageService
+        .writeSecureData(new StorageItem('blockchain_username', username));
+  }
+
+  void writePrivateKeyToSecureStorage() {
     _storageService.writeSecureData(
         new StorageItem('blockchain_private_key', _privateKey.toHex()));
   }

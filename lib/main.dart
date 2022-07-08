@@ -27,16 +27,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setMyContext();
 
-  signer = await initSigner();
-  signer.writeToSecureStorage();
-
-  client = await mqttConnect();
-  subscribeToTopics(client, signer);
-
   // To remove secure data conveniently for debug purposes
   // Comment these two lines for actual workflow
   // StorageService _storageService = StorageService();
   // _storageService.deleteAllSecureData();
+
+  signer = await initSigner();
+  signer.writePrivateKeyToSecureStorage();
+  signer.checkSetup();
+
+  client = await mqttConnect();
+  subscribeToTopics(client, signer);
 
   runApp(MyApp());
 }

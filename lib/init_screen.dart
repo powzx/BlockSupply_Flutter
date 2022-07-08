@@ -57,6 +57,7 @@ class _InitScreen extends State<InitScreen> {
                       TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
+                            signer.writeUsernameToSecureStorage(username);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (BuildContext context) {
                               return LoginScreen(
