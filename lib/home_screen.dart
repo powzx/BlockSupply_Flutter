@@ -1,4 +1,6 @@
+import 'package:blocksupply_flutter/draft_contract_screen.dart';
 import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/view_contracts_screen.dart';
 import 'package:blocksupply_flutter/view_ledgers_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -47,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       Navigator.of(context).push(
                           MaterialPageRoute(builder: (BuildContext context) {
-                            return ViewLedgersScreen(
-                              client: client,
-                              signer: signer,
-                            );
-                          }));
+                        return ViewLedgersScreen(
+                          client: client,
+                          signer: signer,
+                        );
+                      }));
                     },
                     child: Text(
                       "View ledgers",
@@ -63,7 +65,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 80.0,
                 padding: EdgeInsets.all(20.0),
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return DraftContractScreen(
+                          client: client,
+                          signer: signer,
+                        );
+                      }));
+                    },
                     child: Text(
                       "Draft contract",
                       style: TextStyle(fontSize: 16.0),
@@ -74,7 +84,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 80.0,
                 padding: EdgeInsets.all(20.0),
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return ViewContractsScreen(
+                          client: client,
+                          signer: signer,
+                        );
+                      }));
+                    },
                     child: Text(
                       "View contracts",
                       style: TextStyle(fontSize: 16.0),
