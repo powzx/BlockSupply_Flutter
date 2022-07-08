@@ -39,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
