@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.grey,
       ),
       home: HomeScreen(
-        title: 'BlockSupply',
         client: client,
         uuid: uuid,
       ),
