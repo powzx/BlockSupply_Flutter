@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:blocksupply_flutter/ResultScreen.dart';
-import 'package:blocksupply_flutter/Transaction.dart';
+import 'package:blocksupply_flutter/result_screen.dart';
+import 'package:blocksupply_flutter/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
