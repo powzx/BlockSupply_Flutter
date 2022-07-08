@@ -34,7 +34,7 @@ class _InitScreen extends State<InitScreen> {
       final MqttPublishMessage message = c[0].payload;
       final topic = c[0].topic;
       final payload =
-      MqttPublishPayload.bytesToStringAsString(message.payload.message);
+          MqttPublishPayload.bytesToStringAsString(message.payload.message);
 
       print('Received message: $payload from topic: $topic');
 
@@ -56,6 +56,13 @@ class _InitScreen extends State<InitScreen> {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return LoginScreen(
+                            client: client,
+                            signer: signer,
+                          );
+                        }));
                       },
                       child: Text("OK")),
                 ],
@@ -70,6 +77,27 @@ class _InitScreen extends State<InitScreen> {
             '',
             ''));
         print('Received updated transaction');
+      } else if (topic == "/topic/${this.signer.getPublicKeyHex()}/txnHash") {
+        print(
+            "Signing transaction hash: ${message.payload.message.toString()}");
+        String txnSig = this.signer.sign(message.payload.message);
+
+        var builder = MqttClientPayloadBuilder();
+        builder.addString(txnSig);
+        client.publishMessage("/topic/${signer.getPublicKeyHex()}/txnSig",
+            MqttQos.atLeastOnce, builder.payload);
+
+        print("Sending transaction signature: $txnSig");
+      } else if (topic == "/topic/${this.signer.getPublicKeyHex()}/batchHash") {
+        print("Signing batch hash: ${message.payload.message.toString()}");
+        String batchSig = this.signer.sign(message.payload.message);
+
+        var builder = MqttClientPayloadBuilder();
+        builder.addString(batchSig);
+        client.publishMessage("/topic/${signer.getPublicKeyHex()}/batchSig",
+            MqttQos.atLeastOnce, builder.payload);
+
+        print("Sending batch signature: $batchSig");
       } else {
         print('No specified handler for this topic');
       }
@@ -79,9 +107,15 @@ class _InitScreen extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
     if (signer.hasSetUp) {
-      return LoginScreen(client: client, signer: signer,);
+      return LoginScreen(
+        client: client,
+        signer: signer,
+      );
     }
 
-    return SetupScreen(client: client, signer: signer,);
+    return SetupScreen(
+      client: client,
+      signer: signer,
+    );
   }
 }
