@@ -15,14 +15,14 @@ class SetupScreen extends StatefulWidget {
   SetupScreen({this.client, this.signer});
 
   @override
-  _SetupScreen createState() => _SetupScreen(client: client, signer: signer);
+  _SetupScreenState createState() => _SetupScreenState(client: client, signer: signer);
 }
 
-class _SetupScreen extends State<SetupScreen> {
+class _SetupScreenState extends State<SetupScreen> {
   final MqttServerClient client;
   final Signer signer;
 
-  _SetupScreen({this.client, this.signer});
+  _SetupScreenState({this.client, this.signer});
 
   TextEditingController _nameController = new TextEditingController();
 

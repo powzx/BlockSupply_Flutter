@@ -1,7 +1,6 @@
-import 'package:blocksupply_flutter/result_screen.dart';
 import 'package:blocksupply_flutter/signer.dart';
+import 'package:blocksupply_flutter/view_ledgers_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,8 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final Signer signer;
 
   _HomeScreenState({this.client, this.signer});
-
-  TextEditingController serialNumController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,56 +39,46 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Enter Serial Number",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextField(
-                    controller: serialNumController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Serial Number',
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    child: Text("REQUEST"),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 80.0,
+                padding: EdgeInsets.all(20.0),
+                child: ElevatedButton(
                     onPressed: () {
-                      final serialNum = serialNumController.text;
-
-                      var builder = MqttClientPayloadBuilder();
-                      String message =
-                          "{\"serialNum\":\"$serialNum\",\"userPubKey\":\"${this.signer.getPublicKeyHex()}\"}";
-
-                      builder.addString(message);
-
-                      client.publishMessage(
-                          getTopic, MqttQos.atLeastOnce, builder.payload);
-                      print(
-                          'Published message of topic: $getTopic and message: $message');
-
-                      serialNumController.clear();
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return ViewLedgersScreen(
+                              client: client,
+                              signer: signer,
+                            );
+                          }));
                     },
-                  ),
-                ),
+                    child: Text(
+                      "View ledgers",
+                      style: TextStyle(fontSize: 16.0),
+                    )),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 80.0,
+                padding: EdgeInsets.all(20.0),
+                child: ElevatedButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Draft contract",
+                      style: TextStyle(fontSize: 16.0),
+                    )),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 80.0,
+                padding: EdgeInsets.all(20.0),
+                child: ElevatedButton(
+                    onPressed: () {},
+                    child: Text(
+                      "View contracts",
+                      style: TextStyle(fontSize: 16.0),
+                    )),
               ),
             ],
           ),

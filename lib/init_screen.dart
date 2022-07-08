@@ -16,14 +16,14 @@ class InitScreen extends StatefulWidget {
   InitScreen({this.client, this.signer});
 
   @override
-  _InitScreen createState() => _InitScreen(client: client, signer: signer);
+  _InitScreenState createState() => _InitScreenState(client: client, signer: signer);
 }
 
-class _InitScreen extends State<InitScreen> {
+class _InitScreenState extends State<InitScreen> {
   final MqttServerClient client;
   final Signer signer;
 
-  _InitScreen({this.client, this.signer});
+  _InitScreenState({this.client, this.signer});
 
   @override
   void initState() {

@@ -11,14 +11,14 @@ class LoginScreen extends StatefulWidget {
   LoginScreen({this.client, this.signer});
 
   @override
-  _LoginScreen createState() => _LoginScreen(client: client, signer: signer);
+  _LoginScreenState createState() => _LoginScreenState(client: client, signer: signer);
 }
 
-class _LoginScreen extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final MqttServerClient client;
   final Signer signer;
 
-  _LoginScreen({this.client, this.signer});
+  _LoginScreenState({this.client, this.signer});
 
   @override
   Widget build(BuildContext context) {
