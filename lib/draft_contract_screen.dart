@@ -19,8 +19,57 @@ class _DraftContractScreenState extends State<DraftContractScreen> {
 
   _DraftContractScreenState({this.client, this.signer});
 
+  TextEditingController _messageController = new TextEditingController();
+  TextEditingController _recipientController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Draft a contract"),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: Align(
+              alignment: Alignment.center,
+              child: TextField(
+                controller: _recipientController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Recipient',
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: Align(
+              alignment: Alignment.center,
+              child: TextField(
+                controller: _messageController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Message',
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: Align(
+              alignment: Alignment.center,
+              child: TextButton(
+                child: Text("Send"),
+                onPressed: () {},
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
