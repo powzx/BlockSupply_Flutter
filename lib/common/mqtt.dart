@@ -76,7 +76,7 @@ void attachListeners() {
       //     .push(MaterialPageRoute(builder: (BuildContext context) {
       //   return ResultScreen(client: client, resultString: payload);
       // }));
-      updateState(States.RESULT);
+      // updateState(States.RESULT);
       // } else if (topic == updateTopic) {
       //   final newPayloadJson = json.decode(payload);
       //   newTxnList.add(new Transaction(
@@ -86,27 +86,27 @@ void attachListeners() {
       //       '',
       //       ''));
       //   print('Received updated transaction');
-    } else if (topic == "/topic/${signer.getPublicKeyHex()}/hash/txn") {
+    } else if (topic == "/topic/${signer.getPublicKeyHex()}/txnHash") {
       print("Signing transaction hash: $payload");
       String txnSig = signer.sign(message.payload.message);
 
       var builder = MqttClientPayloadBuilder();
       builder.addString(txnSig);
-      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/sig/txn",
+      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/txnSig",
           MqttQos.atLeastOnce, builder.payload);
 
       print("Sending transaction signature: $txnSig");
-    } else if (topic == "/topic/${signer.getPublicKeyHex()}/hash/batch") {
+    } else if (topic == "/topic/${signer.getPublicKeyHex()}/batchHash") {
       print("Signing batch hash: $payload");
       String batchSig = signer.sign(message.payload.message);
 
       var builder = MqttClientPayloadBuilder();
       builder.addString(batchSig);
-      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/sig/batch",
+      mqttClient.publishMessage("/topic/${signer.getPublicKeyHex()}/batchSig",
           MqttQos.atLeastOnce, builder.payload);
 
       print("Sending batch signature: $batchSig");
-    } else if (topic == "/topic/${signer.getPublicKeyHex()}/user/details") {
+    } else if (topic == "/topic/${signer.getPublicKeyHex()}/userDetails") {
       print("Received user details: $payload");
       user = new User(jsonDecode(payload), signer);
       updateLoginSubState(LoginSubState.SUCCESS);
@@ -120,15 +120,15 @@ void attachListeners() {
 
 void subscribeToTopics() {
   mqttClient.subscribe(
-      "/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/dataResult", MqttQos.atLeastOnce);
   mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/hash/txn", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/txnHash", MqttQos.atLeastOnce);
   mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/hash/batch", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/batchHash", MqttQos.atLeastOnce);
   mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/user/details", MqttQos.atLeastOnce);
-  mqttClient.subscribe(
-      "/topic/${signer.getPublicKeyHex()}/response", MqttQos.atLeastOnce);
+      "/topic/${signer.getPublicKeyHex()}/userDetails", MqttQos.atLeastOnce);
+  // mqttClient.subscribe(
+  //     "/topic/${signer.getPublicKeyHex()}/response", MqttQos.atLeastOnce);
 }
 
 void onConnected() {

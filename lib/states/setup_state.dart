@@ -20,8 +20,8 @@ void updateSetUpSubState(SetUpSubState subState) {
 
 class SetUpState extends StatelessWidget {
   final TextEditingController _nameController = new TextEditingController();
-  final TextEditingController _emailController = new TextEditingController();
-  final TextEditingController _mobileController = new TextEditingController();
+  // final TextEditingController _emailController = new TextEditingController();
+  // final TextEditingController _mobileController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -112,94 +112,94 @@ class SetUpState extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10.0),
-        Card(
-          elevation: 3.0,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(5.0),
-              ),
-            ),
-            child: TextField(
-              controller: _emailController,
-              style: TextStyle(
-                fontSize: 15.0,
-                color: Colors.black,
-              ),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                  ),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                hintText: "Email",
-                prefixIcon: Icon(
-                  Icons.mail_outline,
-                  color: Colors.black,
-                ),
-                hintStyle: TextStyle(
-                  fontSize: 15.0,
-                  color: Colors.black,
-                ),
-              ),
-              maxLines: 1,
-            ),
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Card(
-          elevation: 3.0,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(5.0),
-              ),
-            ),
-            child: TextField(
-              controller: _mobileController,
-              style: TextStyle(
-                fontSize: 15.0,
-                color: Colors.black,
-              ),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                  ),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                hintText: "Mobile",
-                prefixIcon: Icon(
-                  Icons.phone_outlined,
-                  color: Colors.black,
-                ),
-                hintStyle: TextStyle(
-                  fontSize: 15.0,
-                  color: Colors.black,
-                ),
-              ),
-              maxLines: 1,
-            ),
-          ),
-        ),
+        // SizedBox(height: 10.0),
+        // Card(
+        //   elevation: 3.0,
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.all(
+        //         Radius.circular(5.0),
+        //       ),
+        //     ),
+        //     child: TextField(
+        //       controller: _emailController,
+        //       style: TextStyle(
+        //         fontSize: 15.0,
+        //         color: Colors.black,
+        //       ),
+        //       decoration: InputDecoration(
+        //         contentPadding: EdgeInsets.all(10.0),
+        //         border: OutlineInputBorder(
+        //           borderRadius: BorderRadius.circular(5.0),
+        //           borderSide: BorderSide(
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //         enabledBorder: OutlineInputBorder(
+        //           borderSide: BorderSide(
+        //             color: Colors.white,
+        //           ),
+        //           borderRadius: BorderRadius.circular(5.0),
+        //         ),
+        //         hintText: "Email",
+        //         prefixIcon: Icon(
+        //           Icons.mail_outline,
+        //           color: Colors.black,
+        //         ),
+        //         hintStyle: TextStyle(
+        //           fontSize: 15.0,
+        //           color: Colors.black,
+        //         ),
+        //       ),
+        //       maxLines: 1,
+        //     ),
+        //   ),
+        // ),
+        // SizedBox(height: 10.0),
+        // Card(
+        //   elevation: 3.0,
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.all(
+        //         Radius.circular(5.0),
+        //       ),
+        //     ),
+        //     child: TextField(
+        //       controller: _mobileController,
+        //       style: TextStyle(
+        //         fontSize: 15.0,
+        //         color: Colors.black,
+        //       ),
+        //       decoration: InputDecoration(
+        //         contentPadding: EdgeInsets.all(10.0),
+        //         border: OutlineInputBorder(
+        //           borderRadius: BorderRadius.circular(5.0),
+        //           borderSide: BorderSide(
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //         enabledBorder: OutlineInputBorder(
+        //           borderSide: BorderSide(
+        //             color: Colors.white,
+        //           ),
+        //           borderRadius: BorderRadius.circular(5.0),
+        //         ),
+        //         hintText: "Mobile",
+        //         prefixIcon: Icon(
+        //           Icons.phone_outlined,
+        //           color: Colors.black,
+        //         ),
+        //         hintStyle: TextStyle(
+        //           fontSize: 15.0,
+        //           color: Colors.black,
+        //         ),
+        //       ),
+        //       maxLines: 1,
+        //     ),
+        //   ),
+        // ),
         SizedBox(height: 20.0),
         Container(
           height: 50.0,
@@ -218,12 +218,13 @@ class SetUpState extends StatelessWidget {
                 var builder = MqttClientPayloadBuilder();
                 builder.addString(jsonEncode({
                   "publicKey": signer.getPublicKeyHex(),
-                  "key": signer.getPublicKeyHex(),
-                  "data": {
-                    "name": _nameController.text,
-                    "email": _emailController.text,
-                    "mobile": _mobileController.text
-                  },
+                  "key": _nameController.text,
+                  "data": signer.getPublicKeyHex(),
+                  // "data": {
+                    // "name": _nameController.text,
+                    // "email": _emailController.text,
+                    // "mobile": _mobileController.text
+                  // },
                 }));
                 mqttClient.publishMessage("/topic/dispatch/user/init",
                     MqttQos.atLeastOnce, builder.payload);

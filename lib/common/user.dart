@@ -6,8 +6,8 @@ User user;
 
 class User {
   String name;
-  String email;
-  String mobile;
+  // String email;
+  // String mobile;
   Signer signer;
 
   User(dynamic userJson, Signer signer) {
@@ -16,7 +16,7 @@ class User {
     var dataJson = jsonDecode(userJson['${signer.getPublicKeyHex()}']);
 
     this.name = dataJson['name'];
-    this.email = dataJson['email'];
-    this.mobile = dataJson['mobile'];
+    // this.email = dataJson['email'];
+    // this.mobile = dataJson['mobile'];
   }
 }

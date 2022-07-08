@@ -14,7 +14,8 @@ enum LoginSubState {
   SUCCESS,
 }
 
-StreamController<LoginSubState> loginStreamController = new StreamController<LoginSubState>();
+StreamController<LoginSubState> loginStreamController =
+    new StreamController<LoginSubState>();
 
 void updateLoginSubState(LoginSubState subState) {
   loginStreamController.sink.add(subState);
@@ -24,10 +25,11 @@ class LoginState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var builder = MqttClientPayloadBuilder();
-    String message = "{\"publicKey\":\"${signer.getPublicKeyHex()}\"}";
+    String message =
+        "{\"targetKey\":\"${signer.getPublicKeyHex()}\",\"publicKey\":\"${signer.getPublicKeyHex()}\"}";
     builder.addString(message);
     mqttClient.publishMessage(
-        "/topic/dispatch/user/get", MqttQos.atLeastOnce, builder.payload);
+        "/topic/dispatch/get", MqttQos.atLeastOnce, builder.payload);
 
     final snapshot = context.watch<LoginSubState>();
 
