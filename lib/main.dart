@@ -35,8 +35,8 @@ Future<void> main() async {
 
   // To remove secure data conveniently for debug purposes
   // Comment these two lines for actual workflow
-  StorageService _storageService = StorageService();
-  _storageService.deleteAllSecureData();
+  // StorageService _storageService = StorageService();
+  // _storageService.deleteAllSecureData();
 
   runApp(MyApp());
 }
