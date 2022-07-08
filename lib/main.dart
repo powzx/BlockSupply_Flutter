@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:blocksupply_flutter/LoadingScreen.dart';
+import 'package:blocksupply_flutter/HomeScreen.dart';
 import 'package:blocksupply_flutter/mqtt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,7 +40,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: LoadingScreen(client: client, uuid: uuid,),
+      home: HomeScreen(
+        title: 'BlockSupply',
+        client: client,
+        uuid: uuid,
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
