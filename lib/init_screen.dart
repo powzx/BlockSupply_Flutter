@@ -49,24 +49,26 @@ class _InitScreen extends State<InitScreen> {
             barrierDismissible: false,
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Success"),
-                content: Text("Account created!"),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return LoginScreen(
-                            client: client,
-                            signer: signer,
-                          );
-                        }));
-                      },
-                      child: Text("OK")),
-                ],
-              );
+              return WillPopScope(
+                  child: AlertDialog(
+                    title: Text("Success"),
+                    content: Text("Account created!"),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) {
+                              return LoginScreen(
+                                client: client,
+                                signer: signer,
+                              );
+                            }));
+                          },
+                          child: Text("OK")),
+                    ],
+                  ),
+                  onWillPop: () async => false);
             });
       } else if (topic == updateTopic) {
         final newPayloadJson = json.decode(payload);
