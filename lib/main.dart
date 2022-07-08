@@ -25,7 +25,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setMyContext();
 
-  initSigner(signer);
+  signer = await initSigner();
 
   client = await mqttConnect();
   subscribeToTopics(client, signer);

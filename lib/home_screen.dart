@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   var builder = MqttClientPayloadBuilder();
                   String message =
-                      "{\"serialNum\":\"$serialNum\",\"user-pubKey\":\"${this.signer.getPublicKeyHex()}\"}";
+                      "{\"serialNum\":\"$serialNum\",\"userPubKey\":\"${this.signer.getPublicKeyHex()}\"}";
 
                   builder.addString(message);
 
