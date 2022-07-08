@@ -2,9 +2,7 @@ import 'package:blocksupply_flutter/storage_service.dart';
 import 'package:ecdsa/ecdsa.dart';
 import 'package:elliptic/elliptic.dart';
 
-Signer signer;
-
-Future<void> initSigner() async {
+Future<void> initSigner(Signer signer) async {
   StorageService _storageService = new StorageService();
   if (await _storageService.containsKeyInSecureData('blockchain_private_key')) {
     signer = new Signer.fromExisting(

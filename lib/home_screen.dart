@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:blocksupply_flutter/result_screen.dart';
+import 'package:blocksupply_flutter/signer.dart';
 import 'package:blocksupply_flutter/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -8,20 +9,20 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 class HomeScreen extends StatefulWidget {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  HomeScreen({Key key, this.client, this.uuid}) : super(key: key);
+  HomeScreen({Key key, this.client, this.signer}) : super(key: key);
 
   @override
   _HomeScreenState createState() =>
-      _HomeScreenState(client: client, uuid: uuid);
+      _HomeScreenState(client: client, signer: signer);
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final MqttServerClient client;
-  final String uuid;
+  final Signer signer;
 
-  _HomeScreenState({this.client, this.uuid});
+  _HomeScreenState({this.client, this.signer});
 
   TextEditingController serialNumController = new TextEditingController();
 
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       print('Received message: $payload from topic: $topic');
 
-      if (topic == "/topic/users/${this.uuid}") {
+      if (topic == "/topic/users/${this.signer.getPublicKeyHex()}") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (BuildContext context) {
           return ResultScreen(client: client, resultString: payload);
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   var builder = MqttClientPayloadBuilder();
                   String message =
-                      "{\"serialNum\":\"$serialNum\",\"uuid\":\"${this.uuid}\"}";
+                      "{\"serialNum\":\"$serialNum\",\"user-pubKey\":\"${this.signer.getPublicKeyHex()}\"}";
 
                   builder.addString(message);
 

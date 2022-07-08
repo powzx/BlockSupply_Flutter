@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:blocksupply_flutter/signer.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -42,6 +43,10 @@ Future<MqttServerClient> mqttConnect() async {
   }
 
   return client;
+}
+
+void subscribeToTopics(MqttServerClient client, Signer signer) {
+  client.subscribe("/topic/users/${signer.getPublicKeyHex()}", MqttQos.atLeastOnce);
 }
 
 void onConnected() {
