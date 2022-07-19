@@ -7,6 +7,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 String username = '';
+bool isLoading = false;
 
 class SetupScreen extends StatefulWidget {
   final MqttServerClient client;
@@ -15,7 +16,8 @@ class SetupScreen extends StatefulWidget {
   SetupScreen({this.client, this.signer});
 
   @override
-  _SetupScreenState createState() => _SetupScreenState(client: client, signer: signer);
+  _SetupScreenState createState() =>
+      _SetupScreenState(client: client, signer: signer);
 }
 
 class _SetupScreenState extends State<SetupScreen> {
@@ -111,17 +113,23 @@ class _SetupScreenState extends State<SetupScreen> {
                       var builder = MqttClientPayloadBuilder();
                       builder.addString(jsonEncode({
                         "publicKey": signer.getPublicKeyHex(),
-                        "key": signer.getPublicKeyHex(),
-                        "data": _nameController.text,
+                        "key": _nameController.text,
+                        "data": signer.getPublicKeyHex(),
                       }));
-                      client.publishMessage("/topic/dispatch/init",
+
+                      client.publishMessage("/topic/dispatch/initUser",
                           MqttQos.atLeastOnce, builder.payload);
+
+                      isLoading = true;
+                      setState(() {});
 
                       username = _nameController.text;
                     }
                   },
                 ),
               ),
+              SizedBox(height: 20.0),
+              isLoading ? CircularProgressIndicator() : Container(),
             ])),
         onWillPop: () async => false);
   }

@@ -16,7 +16,8 @@ class InitScreen extends StatefulWidget {
   InitScreen({this.client, this.signer});
 
   @override
-  _InitScreenState createState() => _InitScreenState(client: client, signer: signer);
+  _InitScreenState createState() =>
+      _InitScreenState(client: client, signer: signer);
 }
 
 class _InitScreenState extends State<InitScreen> {
@@ -45,32 +46,55 @@ class _InitScreenState extends State<InitScreen> {
         }));
       } else if (topic ==
           "/topic/${this.signer.getPublicKeyHex()}/response/post") {
-        showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (BuildContext context) {
-              return WillPopScope(
-                  child: AlertDialog(
-                    title: Text("Success"),
-                    content: Text("Account created!"),
-                    actions: <Widget>[
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            signer.writeUsernameToSecureStorage(username);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) {
-                              return LoginScreen(
-                                client: client,
-                                signer: signer,
-                              );
-                            }));
-                          },
-                          child: Text("OK")),
-                    ],
-                  ),
-                  onWillPop: () async => false);
-            });
+        isLoading = false;
+        setState(() {});
+        if (payload == "300") {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return WillPopScope(
+                    child: AlertDialog(
+                      title: Text("Success"),
+                      content: Text("Account created!"),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              signer.writeUsernameToSecureStorage(username);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return LoginScreen(
+                                  client: client,
+                                  signer: signer,
+                                );
+                              }));
+                            },
+                            child: Text("OK")),
+                      ],
+                    ),
+                    onWillPop: () async => false);
+              });
+        } else if (payload == "400") {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return WillPopScope(
+                    child: AlertDialog(
+                      title: Text("Error"),
+                      content: Text("Invalid username."),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("OK")),
+                      ],
+                    ),
+                    onWillPop: () async => false);
+              });
+        }
       } else if (topic == updateTopic) {
         final newPayloadJson = json.decode(payload);
         newTxnList.add(new Transaction(
