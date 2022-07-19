@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:blocksupply_flutter/authenticator.dart';
 import 'package:blocksupply_flutter/signer.dart';
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class DraftContractScreen extends StatefulWidget {
@@ -64,7 +68,44 @@ class _DraftContractScreenState extends State<DraftContractScreen> {
               alignment: Alignment.center,
               child: TextButton(
                 child: Text("Send"),
-                onPressed: () {},
+                onPressed: () async {
+                  var authenticator = new Authenticator();
+
+                  bool isAuthenticatedWithFingerprint =
+                      await authenticator.authenticateWithFingerPrint();
+
+                  if (isAuthenticatedWithFingerprint) {
+                    var builder = MqttClientPayloadBuilder();
+                    builder.addString(jsonEncode({
+                      "publicKey": signer.getPublicKeyHex(),
+                      "key": _recipientController.text,
+                      "data": jsonEncode({
+                        "text": _messageController.text,
+                        "isSigned": false,
+                      }),
+                    }));
+
+                    client.publishMessage("/topic/dispatch/contract",
+                        MqttQos.atLeastOnce, builder.payload);
+
+                    showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Success"),
+                            content: Text("Contract sent!"),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("OK")),
+                            ],
+                          );
+                        });
+                  }
+                },
               ),
             ),
           ),
