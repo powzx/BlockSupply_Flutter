@@ -33,7 +33,7 @@ class _ViewContractsScreenState extends State<ViewContractsScreen> {
         title: Text("Contracts"),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
@@ -45,14 +45,16 @@ class _ViewContractsScreenState extends State<ViewContractsScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return Card(
-                        color: Colors.lightBlueAccent,
+                        color: contracts[index]['data']['isSigned']
+                            ? Colors.lightGreenAccent
+                            : Colors.redAccent,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Padding(
                               padding:
-                                  EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
+                                  EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                               child: RichText(
                                 text: TextSpan(
                                   style: TextStyle(
@@ -68,10 +70,53 @@ class _ViewContractsScreenState extends State<ViewContractsScreen> {
                                     ),
                                     TextSpan(
                                       text:
-                                          "${contracts[index]['transaction']['data']['text']}",
+                                          "${contracts[index]['data']['text']}",
                                     )
                                   ],
                                 ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: "Sender: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          "${contracts[index]['data']['sender']}",
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  TextButton(
+                                      onPressed: () {
+                                        // Sign the contract
+                                      },
+                                      child: Text(
+                                        'SIGN',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      )),
+                                ],
                               ),
                             ),
                           ],

@@ -79,11 +79,11 @@ class _DraftContractScreenState extends State<DraftContractScreen> {
                     builder.addString(jsonEncode({
                       "publicKey": signer.getPublicKeyHex(),
                       "key": _recipientController.text,
-                      "data": jsonEncode({
+                      "data": {
                         "sender": signer.getUsername(),
                         "text": _messageController.text,
                         "isSigned": false,
-                      }),
+                      },
                     }));
 
                     client.publishMessage("/topic/dispatch/contract",
