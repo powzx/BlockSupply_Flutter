@@ -5,6 +5,7 @@ import 'package:blocksupply_flutter/result_screen.dart';
 import 'package:blocksupply_flutter/setup_screen.dart';
 import 'package:blocksupply_flutter/signer.dart';
 import 'package:blocksupply_flutter/transaction.dart';
+import 'package:blocksupply_flutter/view_contracts_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -39,10 +40,20 @@ class _InitScreenState extends State<InitScreen> {
 
       print('Received message: $payload from topic: $topic');
 
-      if (topic == "/topic/${this.signer.getPublicKeyHex()}/response/get") {
+      if (topic == "/topic/${this.signer.getPublicKeyHex()}/response/getESP") {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (BuildContext context) {
           return ResultScreen(client: client, resultString: payload);
+        }));
+      } else if (topic ==
+          "/topic/${this.signer.getPublicKeyHex()}/response/getContract") {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
+          return ViewContractsScreen(
+            client: client,
+            signer: signer,
+            result: payload,
+          );
         }));
       } else if (topic ==
           "/topic/${this.signer.getPublicKeyHex()}/response/post") {

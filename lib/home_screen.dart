@@ -3,6 +3,7 @@ import 'package:blocksupply_flutter/signer.dart';
 import 'package:blocksupply_flutter/view_contracts_screen.dart';
 import 'package:blocksupply_flutter/view_ledgers_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -85,13 +86,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.all(20.0),
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return ViewContractsScreen(
-                          client: client,
-                          signer: signer,
-                        );
-                      }));
+                      var builder = MqttClientPayloadBuilder();
+                      String message =
+                          "{\"serialNum\":\"${this.signer.getPublicKeyHex()}\",\"userPubKey\":\"${this.signer.getPublicKeyHex()}\"}";
+
+                      builder.addString(message);
+
+                      client.publishMessage('/topic/dispatch/getContract',
+                          MqttQos.atLeastOnce, builder.payload);
                     },
                     child: Text(
                       "View contracts",

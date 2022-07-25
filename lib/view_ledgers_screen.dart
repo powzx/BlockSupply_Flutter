@@ -77,9 +77,9 @@ class _ViewLedgersScreenState extends State<ViewLedgersScreen> {
                   builder.addString(message);
 
                   client.publishMessage(
-                      getTopic, MqttQos.atLeastOnce, builder.payload);
-                  print(
-                      'Published message of topic: $getTopic and message: $message');
+                      '/topic/dispatch/getESP', MqttQos.atLeastOnce, builder.payload);
+                  // print(
+                  //     'Published message of topic: $getTopic and message: $message');
 
                   serialNumController.clear();
                 },

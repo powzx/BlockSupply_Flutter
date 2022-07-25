@@ -62,6 +62,10 @@ class Signer {
     return _publicKey.toCompressedHex();
   }
 
+  String getUsername() {
+    return this.username;
+  }
+
   String sign(List<int> bytes) {
     return deterministicSign(_privateKey, bytes).toCompactHex();
   }

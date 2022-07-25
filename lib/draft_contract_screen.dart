@@ -80,6 +80,7 @@ class _DraftContractScreenState extends State<DraftContractScreen> {
                       "publicKey": signer.getPublicKeyHex(),
                       "key": _recipientController.text,
                       "data": jsonEncode({
+                        "sender": signer.getUsername(),
                         "text": _messageController.text,
                         "isSigned": false,
                       }),
