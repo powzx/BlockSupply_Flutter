@@ -1,16 +1,18 @@
-# blocksupply_flutter
+## Introduction
+This guide will bring you through the setting up and testing of the Flutter application for BlockSupply.
 
-A new Flutter project.
+## Development Environment
+Android Studio with Flutter SDK installed.
 
-## Getting Started
+## Setting up and getting started
+1. Fork the repository and clone into your computer.
+2. Navigate to the BlockSupply_Flutter directory.
+3. Open the project on Android Studio.
+4. Under the BlockSupply_Flutter directory, create a new folder "data".
+5. Input your MQTT broker certificate authority, client certificate, and client private key as ca.crt, client.crt, and client.key respectively.
+6. Open constants.dart, edit the identifier of the Flutter client and IP address of the MQTT broker by replacing `identifier` and `serverIp` respectively.
+7. Connect an Android phone to your computer, and run the application.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Testing
+1. On the home page, enter the serial number that is set in the ESP32.
+2. Observe the real-time update of the sensed data from the ESP32.
