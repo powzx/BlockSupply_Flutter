@@ -1,12 +1,10 @@
 import 'dart:io';
 
+import 'package:blocksupply_flutter/constants.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 SecurityContext myContext;
-
-final identifier = 'Flutter-Client-1';
-final serverIp = '192.168.11.109';
 
 Future<MqttServerClient> mqttConnect() async {
   MqttServerClient client =
